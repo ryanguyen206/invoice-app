@@ -9,6 +9,36 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL")
+}
+
+model Invoice {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  description String?
+  issueDate   DateTime
+  items       Item[]
+  street   String
+  city     String
+  postCode String
+  country  String
+  toEmail String
+  toName String
+  toStreet   String
+  toCity     String
+  toPostCode String
+  toCountry  String
+}
+
+
+
+model Item {
+  id        Int     @id @default(autoincrement())
+  name      String
+  quantity  Int
+  price     Float
+  invoice   Invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId Int
 }
