@@ -10,16 +10,18 @@ const RegisterForm = () => {
     const router = useRouter()
     const ref = useRef<HTMLFormElement>(null)
 
-    const renderToast = (obj: any) => {
-      console.log(obj)
+    const onSuccess = async (obj: any, formData: FormData) => {
       if (obj.error) {
         toast.error(obj.error)
       } else {
         toast.success(obj.success) 
-        redirect('/')
+        const data = await signIn('credentials', {
+          email:formData.get("email"),
+          password:formData.get("password"),
+          redirect:true,
+          callbackUrl:'/'
+        })
       }
-
-    
     }
 
 
@@ -37,7 +39,7 @@ const RegisterForm = () => {
         {
         ref.current?.reset()
         const data = await registerUser(formData)
-        renderToast(data)
+        onSuccess(data, formData)
         }}>
         <div>
           <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
