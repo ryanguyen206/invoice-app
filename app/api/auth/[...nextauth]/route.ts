@@ -9,13 +9,15 @@ import prisma from '@/libs/prismadb'
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
-    CredentialsProvider({
-      name: 'credentials',
+    CredentialsProvider({ 
+      id:'credentials',
+      name: 'Credentials',
       credentials: {
         email: { label: 'email', type: 'text' },
         password: { label: 'password', type: 'password' }
       },
       async authorize(credentials) : Promise<any> {
+
         if (!credentials?.email || !credentials?.password) {
           throw new Error('Invalid credentials');
         }
@@ -41,19 +43,33 @@ export const authOptions: NextAuthOptions = {
 
         return user;
       }
-    })
+    }
+    )
   ],
+  callbacks: {
+    async redirect({ url, baseUrl }) {
+      // Allows relative callback URLs
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) return url;
+      // Redirect to the provided callback URL if it is a sign-out operation
+      else if (url.includes('/sign-out')) return '/sign-in';
+      // Fallback to the base URL
+      return baseUrl;
+    }
+  },
+  
   debug: process.env.NODE_ENV === 'development',
   session: {
     strategy: 'jwt',
   },
-  pages: {
-    
+  pages:{
+    'signIn':'/sign-in'
   },
-  jwt: {
-    secret: process.env.NEXTAUTH_JWT_SECRET,
-  },
-  secret: process.env.AUTH_SECRET,
+  // jwt: {
+  //   secret: process.env.NEXTAUTH_JWT_SECRET,
+  // },
+  secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(authOptions)

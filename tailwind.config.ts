@@ -18,13 +18,11 @@ const config: Config = {
         "purple_light":"#9277ff",
         "red":"#EC5757",
         "red_light":"#ff9797",
-        "light_bg":"#F8F8FB",
+        "bg_light":"#F8F8FB",
         "text-300":"#DFE3FA",
         "text-400":"#7E88C3",
         "text-500":"#888EB0"
-
-
-      }
+      },
     },
   },
   plugins: [],
