@@ -4,11 +4,25 @@ import { signIn } from 'next-auth/react'
 import React, { useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { redirect } from 'next/navigation'
-
+import toast from 'react-hot-toast'
 
 const RegisterForm = () => {
     const router = useRouter()
     const ref = useRef<HTMLFormElement>(null)
+
+    const renderToast = (obj: any) => {
+      console.log(obj)
+      if (obj.error) {
+        toast.error(obj.error)
+      } else {
+        toast.success(obj.success) 
+        redirect('/')
+      }
+
+    
+    }
+
+
   return (
 
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -22,7 +36,8 @@ const RegisterForm = () => {
       <form className="space-y-6" action={async (formData) => 
         {
         ref.current?.reset()
-        await registerUser(formData)
+        const data = await registerUser(formData)
+        renderToast(data)
         }}>
         <div>
           <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
