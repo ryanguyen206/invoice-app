@@ -4,7 +4,6 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { getServerSession } from "next-auth";
 import SessionProvider  from "../components/SessionProvider"
-import { authOptions } from "./api/auth/[...nextauth]/route";
 import Navbar from "@/components/Navbar";
 
 const leage_spartan = League_Spartan({ subsets: ["latin"] });
@@ -20,7 +19,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   
-  const session = await getServerSession(authOptions)
+  const session = await getServerSession()
   return (
 
 

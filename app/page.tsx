@@ -2,7 +2,6 @@ import Image from "next/image";
 import { registerUser } from "@/actions/registerAction";
 import RegisterForm from "@/components/Forms/RegisterForm";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 
 
