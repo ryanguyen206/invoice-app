@@ -3,6 +3,7 @@ import { signIn } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useRef } from 'react'
+import toast from 'react-hot-toast'
 
 
 
@@ -12,20 +13,22 @@ const LoginForm = () => {
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault()
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
-    signIn('credentials', {
+    const data = await signIn('credentials', {
       email:email,
       password:password,
-      callbackUrl:'/'
+      redirect:false,
     })
-  
 
+    if (data?.error) {
+        toast.error(data.error)
+    } else {
+        router.push('/')
+    }
   }
-
-
 
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
