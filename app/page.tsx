@@ -2,14 +2,15 @@ import Image from "next/image";
 import { registerUser } from "@/actions/registerAction";
 import RegisterForm from "@/components/Forms/RegisterForm";
 import { getServerSession } from "next-auth";
-import { redirect } from "next/navigation";
+import { redirect} from "next/navigation";
 
 
 export default async function Home() {
   const session = await getServerSession()
 
+
   if (!session || !session.user){
-    return <p>You are not authorized here</p>
+    redirect('/sign-in')
   }
 
 
