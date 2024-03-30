@@ -25,11 +25,12 @@ export default async function RootLayout({
 
 
     <html lang="en">
-  <body className={`${leage_spartan.className} h-screen bg-bg_light`}>
+  <body className={`${leage_spartan.className} h-screen bg-bg_light `}>
         <Toaster position="top-center" />
         <div className="flex">
-          <Navbar/>
+        
           <SessionProvider session={session}>
+            <Navbar/>
             <div className="container h-full mx-auto xl:px-30 max-w-6xl">
               {children}
             </div>
