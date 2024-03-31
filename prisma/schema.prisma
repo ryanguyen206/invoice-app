@@ -34,18 +34,19 @@ model Invoice {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   description String?
-  issueDate   DateTime
+  issueDate   DateTime?
   items       Item[]
-  street   String
-  city     String
-  postCode String
-  country  String
-  toEmail String
-  toName String
-  toStreet   String
-  toCity     String
-  toPostCode String
-  toCountry  String
+  street   String?
+  city     String?
+  postCode String?
+  country  String?
+  toEmail String?
+  toName String?
+  toStreet   String?
+  toCity     String?
+  toPostCode String?
+  toCountry  String?
+  paid Boolean? @default(false)
 
   user User @relation(fields: [userId], references: [id])
   userId Int

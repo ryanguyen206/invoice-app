@@ -1,29 +1,33 @@
-import Image from "next/image";
-import { registerUser } from "@/actions/registerAction";
-import RegisterForm from "@/components/Forms/RegisterForm";
 import { getServerSession } from "next-auth";
 import { redirect} from "next/navigation";
-
+import Button from "@/components/Button";
+import Header from "@/components/Header";
+import { authOptions } from "@/libs/auth";
+import prisma from '@/libs/prismadb'
+import { getInvoice } from "@/libs/get";
+import Invoices from "@/components/Invoices";
+import { headers } from "next/headers";
 
 export default async function Home() {
-  const session = await getServerSession()
-
-
+  const session = await getServerSession(authOptions)
+  
   if (!session || !session.user){
     redirect('/sign-in')
   }
 
+  const invoices = await getInvoice(session)
+
+  // const response = await fetch(`${process.env.NEXTAUTH_URL}/api/invoices`,
+  // { cache: "no-cache", method: "GET", headers: headers() }
+  // )
+
+  // const invoices : Invoice[] = await response.json()
 
   return (
-    <main className="border mt-20 flex justify-between items-center">
-        <div> 
-          <h1 className="text-3xl font-bold tracking-tighter">Invoices</h1>
-          <p className="text-text-500">There are 8 invoices</p>
-        </div>
-        <div>
-          <button>New invoice</button>
-        </div>
-        <p>Hi {session?.user?.email}</p>
+    <main className="mt-20 mx-10 md:mx-20">
+      
+        <Header invoices={invoices}/>
+        <Invoices invoices={invoices}/>
     </main>
   );
 }
