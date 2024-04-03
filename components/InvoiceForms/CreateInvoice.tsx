@@ -5,7 +5,8 @@ import toast from 'react-hot-toast'
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import "react-datepicker/dist/react-datepicker.css";
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody} from "@nextui-org/react";
+import Button from '../Button';
   
 interface CreateInvoiceProps {
     isOpen : boolean
@@ -33,17 +34,17 @@ const CreateInvoice : FC<CreateInvoiceProps> =  ({isOpen, onOpenChange}) => {
             }
         }>
                 <h2 className='text-purple text-xl font-semibold mb-6'>Bill From</h2>
-                <Input name={'address'} label={'Street Address'} />
+                <Input name={'street'} label={'Street Address'} />
                 <div className='mt-6 grid grid-cols-2 '>
                     <div className='mr-10'><Input name={'city'} label={'City'}/></div>
-                    <div className=''><Input name={'postalCode'} label={'Post Code'}/></div>    
+                    <div className=''><Input name={'postCode'} label={'Post Code'}/></div>    
                     <div className='mt-6 col-span-2'><Input name={'country'} label={'Country'}/> </div>
                 </div>
                 <h2 className='text-purple text-xl font-semibold mb-6 mt-10'>Bill To</h2>
                 <div className='flex flex-col space-y-6'>  
                     <Input name={'toName'} label={`Client's Name`}/>
                     <Input name={'toEmail'} label={`Client's Email`}/>
-                    <Input name={'toAddress'} label={'Street Address'} />
+                    <Input name={'toStreet'} label={'Street Address'} />
                 </div>
 
                 <div className='mt-6 grid grid-cols-2 mb-6 '>
@@ -58,18 +59,11 @@ const CreateInvoice : FC<CreateInvoiceProps> =  ({isOpen, onOpenChange}) => {
                 </div>
           
                 <Input name={'description'} label={'Project Description'}/>
+                <Button className="bg-purple text-white px-6 py-3 my-10 rounded-full" defaultText='Create' pendingText='Creating...'/>
                 {/* <h2 className='text-text-500 text-xl font-semibold my-6'>Items List</h2> */}
       
             </form>
                 </ModalBody>
-                <ModalFooter>
-                  <Button color="danger" variant="light" onPress={onClose}>
-                    Close
-                  </Button>
-                  <Button color="default" className='bg-purple text-white' >
-                        <button className='' type='submit'>Create</button>
-                  </Button>
-                </ModalFooter>
               </>
             )}
           </ModalContent>

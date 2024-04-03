@@ -8,22 +8,11 @@ import { redirect } from 'next/navigation'
 export const registerUser = async (formData: FormData) => {
 
     const email = formData.get("email")
-    const username = formData.get("username")
-    const name = formData.get("name")
     const password = formData.get("password")
     
     const hashedPassword = await bcrypt.hash(password as string, 12)
 
-    const existingUsername = await prisma.user.findUnique({
-        where: {
-            username: username as string,
-        },
-    });
-    
-    if (existingUsername) {
-        return { error: 'Username already exists' };
-    }
-    
+
     const existingEmail = await prisma.user.findUnique({
         where: {
             email: email as string,
@@ -37,8 +26,6 @@ export const registerUser = async (formData: FormData) => {
     const user = await prisma.user.create({
             data: {
                 email: email as string,
-                username: username as string,
-                name: name as string,
                 hashedPassword
             }
         })

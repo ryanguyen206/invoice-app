@@ -8,6 +8,7 @@ import { useFormStatus } from 'react-dom';
 import toast from 'react-hot-toast';
 import Button from '../Button';
 import Input from './Input';
+import { cn } from '@/libs/cn';
 
 
 
@@ -52,7 +53,8 @@ const AuthForm : FC<AuthFormProps> = ({formType, onSuccess}) => {
       
   return (
     
-    <div className="flex flex-col mx-10 md:flex-row min-h-full flex-1 justify-center mt-32 md:mt-52 bg-white rounded-3xl">
+    <div className={cn("flex flex-col mx-10 md:flex-row min-h-full flex-1 justify-center mt-20 md:mt-36  bg-white rounded-3xl")
+      }>
     <div className="w-full md:w-1/2 lg:w-1/3 mx-auto py-20  order-last md:order-first">
     <div className=" ">
       <h2 className="mb-10 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">
@@ -60,17 +62,11 @@ const AuthForm : FC<AuthFormProps> = ({formType, onSuccess}) => {
       </h2>
     </div>
       <form ref={ref} action={async (formData) => formAction(formData)} className="space-y-6 w-1/2 md:w-3/4 mx-auto">
-            {formType === 'register' && 
-                <>
-                    <Input label='Name' name='name'/>
-                    <Input label='Username' name='username'/>       
-                </>}
-
             <Input label='Email' name='email'   value={email} onChange={(e) => setEmail(e.target.value)} />   
             <Input label='Password' name='password'   value={password} onChange={(e) => setPassword(e.target.value)} />  
 
 
-            {formType === 'register' ? <Button pendingText={'Registering...'} defaultText={'Register'}/> :       
+            {formType === 'register' ? <Button  className="uppercase flex mt-10 w-1/2 mx-auto text-center justify-center rounded-md bg-purple p-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" pendingText={'Registering...'} defaultText={'Register'}/> :       
               <button className="uppercase flex mt-10 w-1/2 mx-auto text-center justify-center rounded-md bg-purple p-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" onClick={(e) => handleSubmit(e)}>Sign In</button>
             }
       
@@ -84,12 +80,13 @@ const AuthForm : FC<AuthFormProps> = ({formType, onSuccess}) => {
     {/* register */}
     <div className='order-1 pt-6 bg-gradient-to-r from-violet-400 w-full to-purple text-center text-white  md:w-1/2 rounded-3xl md:order-last md:rounded-l-[120px] flex flex-col justify-center items-center pb-10 gap-y-6 '>
           <p className="text-3xl font-bold">
-          {formType ==='login' ? 'Not a member?' : 'Welcome Back!'}
+            {formType ==='login' ? 'Not a member?' : 'Welcome Back!'}
           </p>
 
-          {formType ==='login' ? 
-          <p>Register with your personal credentials to <br/> get started creating invoices!</p> : 
-          <p>Enter your personal details to use all <br/> of the site features</p>}
+          <p className='lg:text-lg'>
+            {formType ==='login' ? <>Register with your personal credentials <br/> to get started creating invoices!</> :     <>Enter your personal details <br /> to use all of the site features</>}
+          </p>
+
 
           {formType === 'login' ? 
           <>
