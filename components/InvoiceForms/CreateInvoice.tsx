@@ -1,23 +1,37 @@
-
 import { createInvoice } from '@/actions/createInvoice'
 import Input from '../Forms/Input'
-import React, { useState } from 'react'
+import React, { FC, useState } from 'react'
 import toast from 'react-hot-toast'
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import "react-datepicker/dist/react-datepicker.css";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+  
+interface CreateInvoiceProps {
+    isOpen : boolean
+    onOpenChange : () => void
+}
 
-const CreateInvoice =  () => {
+const CreateInvoice : FC<CreateInvoiceProps> =  ({isOpen, onOpenChange}) => {
+ 
     const [startDate, setStartDate] = useState<Date | null>(new Date());
+    const [scrollBehavior, setScrollBehavior] = React.useState<"outside" | "normal" | "inside" | undefined>("inside");
+
   return (
-    <div className=''>
-        <form action={
-            async (formData) => {
-                const response = await createInvoice(formData)
-                toast.success(response.message)
+
+        <>
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior={scrollBehavior}>
+          <ModalContent>
+            {(onClose) => (
+              <>
+                   <ModalHeader className="flex flex-col gap-1 text-3xl pt-10">New Invoice</ModalHeader>
+                <ModalBody>
+                <form action={
+                    async (formData) => {
+                    const response = await createInvoice(formData)
+                    toast.success(response.message)
             }
-        } className=''>
-                <h1 className='font-bold text-2xl mb-10'>New Invoice</h1>
+        }>
                 <h2 className='text-purple text-xl font-semibold mb-6'>Bill From</h2>
                 <Input name={'address'} label={'Street Address'} />
                 <div className='mt-6 grid grid-cols-2 '>
@@ -39,18 +53,28 @@ const CreateInvoice =  () => {
                 </div>
 
                 <div className='mb-6 flex flex-col'>
-                    <label className='text-text-400 font-semibold mb-2' htmlFor='issueDate'>Invoice Date</label>
-                    <DatePicker  showIcon className='px-2 py-2 rounded-lg' id="issueDate" name="issueDate" selected={startDate} onChange={(date) => setStartDate(date)} />    
+                    <label className='text-text-400 font-semibold mb-2 ' htmlFor='issueDate'>Invoice Date</label>
+                    <DatePicker  showIcon className='px-2 py-2 rounded-lg border border-text-500' id="issueDate" name="issueDate" selected={startDate} onChange={(date) => setStartDate(date)} />    
                 </div>
           
                 <Input name={'description'} label={'Project Description'}/>
                 {/* <h2 className='text-text-500 text-xl font-semibold my-6'>Items List</h2> */}
       
-                <button className='ml-auto block text-white bg-purple py-3 px-6 rounded-full border' type='submit'>Create</button>
             </form>
-    </div>
-   
-     
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="danger" variant="light" onPress={onClose}>
+                    Close
+                  </Button>
+                  <Button color="default" className='bg-purple text-white' >
+                        <button className='' type='submit'>Create</button>
+                  </Button>
+                </ModalFooter>
+              </>
+            )}
+          </ModalContent>
+        </Modal>
+        </>
   )
 }
 

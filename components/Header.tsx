@@ -2,13 +2,15 @@
 import CreateInvoice  from '@/components/InvoiceForms/CreateInvoice'
 import { Invoice } from '@prisma/client'
 import React, { FC, useState } from 'react'
+import plusIcon from '@/public/assets/icon-plus.svg'
+import Image from 'next/image'
+import {Button, useDisclosure} from "@nextui-org/react";
 
 interface HeaderProps {
   invoices: Invoice[] | undefined
 }
 const Header : FC<HeaderProps> = ({invoices}) => {
-    const [modal, isOpen] = useState(false)
-
+    const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
 
   return (
@@ -16,14 +18,19 @@ const Header : FC<HeaderProps> = ({invoices}) => {
     <div className='flex justify-between items-center'>
          <div> 
           <h1 className="text-3xl font-bold tracking-tighter">Invoices</h1>
-          <p className="text-text-500">There are  invoices</p>
+          {invoices?.length === 0 ? <p className='text-text-500'>No invoices</p> : <p className="text-text-500">There are {invoices?.length}  invoices</p>}
         </div>
         <div>
-          <button onClick={() => isOpen(true)}>New Invoice</button>
-          <button onClick={() => isOpen(false)}>Close</button>
+          <div  className='cursor-pointer bg-purple  text-white py-2 px-6 rounded-full flex gap-x-4  items-center'>
+            <div className='bg-white border rounded-full p-3'>
+              <Image  className='' alt='Plus Icon meant for adding invoice' src={plusIcon}/>
+            </div>
+            <Button onPress={onOpen} className='bg-purple text-white text-2xl'>New <span className='hidden md:block'>Invoice</span></Button>
+          </div>
         </div>
     </div>
-    {modal && <CreateInvoice/>}
+
+    {isOpen && <CreateInvoice isOpen={isOpen} onOpenChange={onOpenChange}/>}
  
     </>
  

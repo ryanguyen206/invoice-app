@@ -10,7 +10,7 @@ import Link from 'next/link'
 const Navbar = () => {
   const {data: session} = useSession()
   return (
-    <div className='hidden bg-[#252945] min-h-screen  w-[130px] md:flex flex-col '>
+    <div className='hidden bg-[#252945] w-[130px] min-h-screen  md:flex flex-col '>
       <div className='flex-1'>
         <div className='w-full h-[70px] bg-purple'></div>
           <div className='w-full  flex justify-center items-center relative'>
