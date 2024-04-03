@@ -21,7 +21,7 @@ const Invoices : FC<InvoicesProps> = ({invoices}) => {
        </div>
 
        :
-            <div className='mt-10 border'>
+            <div className='mt-10'>
                 <ul>
                     {invoices.map((invoice) => (
                         <div key={invoice.id}>

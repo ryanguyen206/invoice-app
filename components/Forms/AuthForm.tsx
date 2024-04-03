@@ -66,8 +66,8 @@ const AuthForm : FC<AuthFormProps> = ({formType, onSuccess}) => {
             <Input label='Password' name='password'   value={password} onChange={(e) => setPassword(e.target.value)} />  
 
 
-            {formType === 'register' ? <Button  className="uppercase flex mt-10 w-1/2 mx-auto text-center justify-center rounded-md bg-purple p-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" pendingText={'Registering...'} defaultText={'Register'}/> :       
-              <button className="uppercase flex mt-10 w-1/2 mx-auto text-center justify-center rounded-md bg-purple p-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-violet-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600" onClick={(e) => handleSubmit(e)}>Sign In</button>
+            {formType === 'register' ? <Button  pendingText={'Registering...'} defaultText={'Register'}/> :       
+              <Button pendingText={'Signing in...'} defaultText={'Sign In'} onClick={(e) => handleSubmit(e)}/>
             }
       
       </form>
