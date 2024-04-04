@@ -10,7 +10,7 @@ interface HeaderProps {
   invoices: Invoice[] | undefined
 }
 const Header : FC<HeaderProps> = ({invoices}) => {
-    const {isOpen, onOpen, onOpenChange} = useDisclosure();
+    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
 
 
   return (
@@ -30,7 +30,7 @@ const Header : FC<HeaderProps> = ({invoices}) => {
         </div>
     </div>
 
-    {isOpen && <CreateInvoice isOpen={isOpen} onOpenChange={onOpenChange}/>}
+    {isOpen && <CreateInvoice onClose={onClose} isOpen={isOpen} onOpenChange={onOpenChange}/>}
  
     </>
  
