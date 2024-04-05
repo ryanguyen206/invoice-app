@@ -1,5 +1,5 @@
 'use client'
-import CreateInvoice  from '@/components/InvoiceForms/CreateInvoice'
+import CreateInvoice  from '@/components/Forms/CreateInvoice'
 import { Invoice } from '@prisma/client'
 import React, { FC, useState } from 'react'
 import plusIcon from '@/public/assets/icon-plus.svg'

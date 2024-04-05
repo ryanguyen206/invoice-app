@@ -5,6 +5,8 @@ import { authOptions } from "@/libs/auth";
 import { getInvoice } from "@/libs/get";
 import Invoices from "@/components/Invoices";
 import { getStates, getCities } from "@/libs/get";
+import { Suspense } from "react";
+import Loading from "./loading";
 
 export default async function Home() {
   const session = await getServerSession(authOptions)
@@ -24,10 +26,12 @@ export default async function Home() {
   // const invoices : Invoice[] = await response.json()
 
   return (
-    <main className="mt-20 mx-10 md:mx-20">
-      
+    <main className="mt-20 mx-10 xl:mx-20">
         <Header invoices={invoices} states={states}/>
-        <Invoices invoices={invoices}/>
+        <Suspense fallback={<Loading/>}>
+          <Invoices invoices={invoices}/>
+        </Suspense>
+   
     </main>
   );
 }

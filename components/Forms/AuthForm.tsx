@@ -7,7 +7,7 @@ import React, { FC, useEffect, useRef, useState } from 'react'
 import { useFormStatus } from 'react-dom';
 import toast from 'react-hot-toast';
 import Button from '../Button';
-import Input from './Input';
+import Input from '../Input';
 import { cn } from '@/libs/cn';
 
 
