@@ -6,14 +6,14 @@ import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import "react-datepicker/dist/react-datepicker.css";
 import {Modal, ModalContent, ModalHeader, ModalBody, Select, SelectSection, SelectItem, Input} from "@nextui-org/react";
 import Button from '../Button';
-import { oneCountry, cityAPIResponse } from '@/libs/get';
+import { oneState, cityAPIResponse } from '@/libs/get';
 import { LuAsterisk } from "react-icons/lu";
 
 interface CreateInvoiceProps {
     isOpen : boolean
     onOpenChange : () => void
     onClose: () => void
-    states: oneCountry[]
+    states: oneState[]
 }
 
 const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceProps) => {
@@ -76,8 +76,12 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                 <form action={
                     async (formData) => {
                     const response = await createInvoice(formData, fromState, fromCity, toState, toCity)
-                    onClose()
-                    toast.success(response.message)
+                    if (response.error) {
+                      toast.error(response.message)
+                    } else {
+                      onClose()
+                      toast.success(response.message)
+                    }                
             }
         }>
              
@@ -108,8 +112,8 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                     <div className='ml-10'><Input isRequired size='lg' name={'postCode'} placeholder='98112' label={'Post Code'}/></div>    
                     <Select
                       items={states}
-                      label="Country"
-                      placeholder="Select a country"
+                      label="State"
+                      placeholder="Select a state"
                       className="mt-6 col-span-2"
                       isRequired
                       size='lg'
@@ -145,10 +149,10 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                     <div className='ml-10'><Input size='lg' isRequired name={'toPostCode'} placeholder='23021' label={'Post Code'}/></div>    
                     <Select
                       items={states}
-                      label="Country"
+                      label="State"
                       isRequired
                       size='lg'
-                      placeholder="Select a country"
+                      placeholder="Select a state"
                       className="mt-6 col-span-2"
                       onChange={(e) => handleStateChange(e, 'to')}
                     >

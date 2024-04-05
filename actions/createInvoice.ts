@@ -17,6 +17,15 @@ export const createInvoice = async (formData: FormData, fromState : string, from
     const issueDate = formData.get("issueDate") as string
     const formattedDate = new Date(issueDate)
 
+    if (postCode && toPostCode) {
+        const postCodeRegex = /^\d{5}$/;
+        if (!postCodeRegex.test(postCode as string) || !postCodeRegex.test(toPostCode as string)) {
+            return { error: true, message: "Post Code must be exactly 5 digits and contain only numbers" }
+        }
+    }
+
+
+
     const user = await prisma.user.findUnique({
         where:{
             email:session?.user?.email as string
@@ -27,25 +36,31 @@ export const createInvoice = async (formData: FormData, fromState : string, from
         return {message: 'User not found'}
     }
 
-    const newInvoice = await prisma.invoice.create({
-        data: {
-            description: description as string,
-            street: street as string,
-            city: fromCity as string,
-            postCode: postCode as string,
-            state: fromState as string,
-            toStreet: toStreet as string,
-            toName: toName as string,
-            toEmail: toEmail as string,
-            toCity: toCity as string,
-            toPostCode: toPostCode as string,
-            toState: toState as string,
-            issueDate: formattedDate,
-            user: {
-                connect: { id: user?.id } 
+    try{
+        const newInvoice = await prisma.invoice.create({
+            data: {
+                description: description as string,
+                street: street as string,
+                city: fromCity as string,
+                postCode: postCode as string,
+                state: fromState as string,
+                toStreet: toStreet as string,
+                toName: toName as string,
+                toEmail: toEmail as string,
+                toCity: toCity as string,
+                toPostCode: toPostCode as string,
+                toState: toState as string,
+                issueDate: formattedDate,
+                user: {
+                    connect: { id: user?.id } 
+                }
             }
-        }
-    });
+        });
+    } catch(e) {
+        console.log(e)
+    }
+  
+
 
     revalidatePath('/')
     

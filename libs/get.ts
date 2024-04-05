@@ -22,12 +22,9 @@ export const getInvoice = async (session: Session | null)  => {
     return []
 }
 
-export type countryAPIResponse = {
-    data: oneCountry[]
-    
-}
 
-export type oneCountry = {
+
+export type oneState = {
     key:string
     value: string
 }
@@ -56,7 +53,7 @@ export const getStates = async () => {
       }
     };
 
-    const response  = await axios.request<oneCountry[]>(options);
+    const response  = await axios.request<oneState[]>(options);
     return response.data
 }
 

@@ -37,13 +37,13 @@ model Invoice {
   items       Item[]
   street   String
   city     String
-  postCode String
+  postCode String @db.VarChar(5)
   state  String
   toEmail String
   toName String
   toStreet   String
   toCity     String
-  toPostCode String
+  toPostCode String @db.VarChar(5)
   toState  String
   paid Boolean? @default(false)
 
