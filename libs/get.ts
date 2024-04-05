@@ -20,9 +20,7 @@ export const getInvoice = async (session: Session | null)  => {
     } 
 
     return []
-
 }
-
 
 export type countryAPIResponse = {
     data: oneCountry[]
@@ -34,29 +32,6 @@ export type oneCountry = {
     value: string
 }
 
-
-
-export const getStates = async () => {
-
-    const options = {
-        method: 'GET',
-        url: 'https://referential.p.rapidapi.com/v1/state',
-        params: {
-          iso_a2: 'us',
-          lang: 'en',
-          limit: '250'
-        },
-        headers: {
-          'X-RapidAPI-Key': process.env.NEXT_PUBLIC_API_KEY,
-          'X-RapidAPI-Host': process.env.NEXT_PUBLIC_API_HOST
-        }
-      };
-
-      const response : countryAPIResponse = await axios.request(options);
-      return response.data
-}
-
-
 export type cityAPIResponse = {
     iso_a2: string;
     key: string;
@@ -66,7 +41,27 @@ export type cityAPIResponse = {
     value: string;
 }
 
+export const getStates = async () => {
+    const options = {
+      method: 'GET',
+      url: 'https://referential.p.rapidapi.com/v1/state',
+      params: {
+        iso_a2: 'us',
+        lang: 'en',
+        limit: '250'
+      },
+      headers: {
+        'X-RapidAPI-Key': process.env.API_KEY,
+        'X-RapidAPI-Host': process.env.API_HOST
+      }
+    };
+
+    const response  = await axios.request<oneCountry[]>(options);
+    return response.data
+}
+
 export const getCities = async (state_code : string) => {
+
     const options = {
         method: 'GET',
         url: 'https://referential.p.rapidapi.com/v1/city',
@@ -77,8 +72,8 @@ export const getCities = async (state_code : string) => {
           state_code: state_code
         },
         headers: {
-            'X-RapidAPI-Key': process.env.NEXT_PUBLIC_API_KEY,
-            'X-RapidAPI-Host': process.env.NEXT_PUBLIC_API_HOST
+            'X-RapidAPI-Key': process.env.API_KEY,
+            'X-RapidAPI-Host': process.env.API_HOST
           }
       }
       const response = await axios.request<cityAPIResponse[]>(options);

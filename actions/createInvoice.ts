@@ -9,19 +9,13 @@ export const createInvoice = async (formData: FormData, fromState : string, from
 
     const street = formData.get("street")
     const postCode = formData.get("postCode")
-
-
     const toStreet = formData.get("toStreet")
     const toName = formData.get("toName")
     const toEmail =  formData.get("toEmail")
     const toPostCode = formData.get("toPostCode")
-
     const description = formData.get("description")
-
     const issueDate = formData.get("issueDate") as string
-
     const formattedDate = new Date(issueDate)
-
 
     const user = await prisma.user.findUnique({
         where:{
@@ -39,13 +33,13 @@ export const createInvoice = async (formData: FormData, fromState : string, from
             street: street as string,
             city: fromCity as string,
             postCode: postCode as string,
-            country: fromState as string,
+            state: fromState as string,
             toStreet: toStreet as string,
             toName: toName as string,
             toEmail: toEmail as string,
             toCity: toCity as string,
             toPostCode: toPostCode as string,
-            toCountry: toState as string,
+            toState: toState as string,
             issueDate: formattedDate,
             user: {
                 connect: { id: user?.id } 

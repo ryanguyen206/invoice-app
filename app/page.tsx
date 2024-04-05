@@ -1,12 +1,10 @@
 import { getServerSession } from "next-auth";
 import { redirect} from "next/navigation";
-import Button from "@/components/Button";
 import Header from "@/components/Header";
 import { authOptions } from "@/libs/auth";
-import prisma from '@/libs/prismadb'
 import { getInvoice } from "@/libs/get";
 import Invoices from "@/components/Invoices";
-import { headers } from "next/headers";
+import { getStates, getCities } from "@/libs/get";
 
 export default async function Home() {
   const session = await getServerSession(authOptions)
@@ -16,6 +14,8 @@ export default async function Home() {
   }
 
   const invoices = await getInvoice(session)
+  const states  = await getStates()
+
 
   // const response = await fetch(`${process.env.NEXTAUTH_URL}/api/invoices`,
   // { cache: "no-cache", method: "GET", headers: headers() }
@@ -26,7 +26,7 @@ export default async function Home() {
   return (
     <main className="mt-20 mx-10 md:mx-20">
       
-        <Header invoices={invoices}/>
+        <Header invoices={invoices} states={states}/>
         <Invoices invoices={invoices}/>
     </main>
   );

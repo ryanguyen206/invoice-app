@@ -6,23 +6,21 @@ import 'react-datepicker/dist/react-datepicker-cssmodules.css';
 import "react-datepicker/dist/react-datepicker.css";
 import {Modal, ModalContent, ModalHeader, ModalBody, Select, SelectSection, SelectItem, Input} from "@nextui-org/react";
 import Button from '../Button';
-import { getStates, getCities } from '@/libs/get';
 import { oneCountry, cityAPIResponse } from '@/libs/get';
-
+import {useForm} from 'react-hook-form'
 
 interface CreateInvoiceProps {
     isOpen : boolean
     onOpenChange : () => void
     onClose: () => void
+    states: oneCountry[]
 }
 
-const CreateInvoice =  ({isOpen, onOpenChange, onClose} : CreateInvoiceProps) => {
+const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceProps) => {
  
     const [startDate, setStartDate] = useState<Date | null>(new Date());
     const [scrollBehavior, setScrollBehavior] = React.useState<"outside" | "normal" | "inside" | undefined>("inside");
-    
-    const [states, setStates] = useState<oneCountry[]>([])
-
+  
     const [cities, setCities] = useState<cityAPIResponse[]>([])
     const [toCities, setToCities] = useState<cityAPIResponse[]>([])
 
@@ -33,8 +31,7 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose} : CreateInvoiceProps) =>
     const [toState, setToState] = useState('');
 
 
-
-
+    const {register} = useForm()
 
     const handleStateChange = async (e: React.ChangeEvent<HTMLSelectElement>, type : 'to' | 'from') => {
 
@@ -58,32 +55,17 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose} : CreateInvoiceProps) =>
       }
     };
 
-    useEffect(() => {
-      console.log(toCity, 'to')
-      console.log(fromCity, 'from')
-  
-    }, [toCity, fromCity])
-    
-    
   
     const fetchCities = async (stateCode : string, type : 'to' | 'from') => {
-      const data = await getCities(stateCode)
-      console.log(data)
+      const data = await fetch(`/api/cities?stateCode=${stateCode}`)
+      const response = await data.json()
       if (type === 'from') {
-        setCities(data)
+        setCities(response)
       } else {
-        setToCities(data)
+        setToCities(response)
       }
     
-    };
-
-    useEffect(() => {
-      const fetchData = async () => {
-        const data = await getStates();
-        setStates(data)
-      };
-      fetchData();
-    }, []);
+    };   
     
   return (
 
@@ -102,10 +84,10 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose} : CreateInvoiceProps) =>
             }
         }>
                 <h2 className='text-purple text-xl font-semibold mb-6'>Bill From</h2>
-                <Input name={'street'} label={'Street Address'} />
+                <Input {...register("firstName")}      isRequired name={'street'} label={'Street Address'} placeholder='2039 Swag St' />
                 
                 <div className='mt-6 grid grid-cols-2 '>
-                    <Select
+                      <Select
                       items={cities}
                       label="City"
                       placeholder="Select a city (state first)"
@@ -115,29 +97,27 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose} : CreateInvoiceProps) =>
                     >
                       {(city) => <SelectItem key={city.value}>{city.value}</SelectItem>}
                     </Select>
-                    <div className='ml-10'><Input name={'postCode'} label={'Post Code'}/></div>    
+                
+                    <div className='ml-10'><Input name={'postCode'} placeholder='98112' label={'Post Code'}/></div>    
                     <Select
-                        label="State"
-                        placeholder="Select a state"
-                        defaultSelectedKeys=""
-                        className="col-span-2 mt-6"
-                        onChange={(e) => handleStateChange(e, 'from')}
-                      >
-                        {states.map((state) => (
-                          <SelectItem key={state.key} value={state.key}>
-                            {state.value}
-                          </SelectItem>
-                        ))}
-                      </Select>
+                      items={states}
+                      label="Country"
+                      placeholder="Select a country"
+                      className="mt-6 col-span-2"
+                      onChange={(e) => handleStateChange(e, 'from')}
+                    >
+                      {(state) => <SelectItem key={state.key}>{state.value}</SelectItem>}
+                    </Select>
+
 
 
                 </div>
                 <h2 className='text-purple text-xl font-semibold mb-6 mt-10'>Bill To</h2>
            
                 <div className='flex flex-col space-y-6 -z-10'>  
-                    <Input name={'toName'} label={`Client's Name`}/>
-                    <Input name={'toEmail'} label={`Client's Email`}/>
-                    <Input name={'toStreet'} label={'Street Address'} />
+                    <Input name={'toName'} placeholder='John Doe' label={`Client's Name`}/>
+                    <Input name={'toEmail'} placeholder='johndoe@gmail.com' label={`Client's Email`}/>
+                    <Input name={'toStreet'} placeholder='2039 Happy Place' label={'Street Address'} />
                 </div>
 
                 <div className='mt-6 grid grid-cols-2 mb-6 '>
@@ -151,27 +131,24 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose} : CreateInvoiceProps) =>
                     >
                       {(city) => <SelectItem key={city.value}>{city.value}</SelectItem>}
                     </Select>
-                    <div className='ml-10'><Input name={'toPostCode'} label={'Post Code'}/></div>    
+                    <div className='ml-10'><Input name={'toPostCode'} placeholder='23021' label={'Post Code'}/></div>    
                     <Select
-                        label="State"
-                        placeholder="Select a state"
-                        defaultSelectedKeys=""
-                        className="col-span-2 mt-6"
-                        onChange={(e) => handleStateChange(e, 'to')}
-                      >
-                        {states.map((state) => (
-                          <SelectItem key={state.key} value={state.key}>
-                            {state.value}
-                          </SelectItem>
-                        ))}
-                      </Select>
+                      items={states}
+                      label="Country"
+                      placeholder="Select a country"
+                      className="mt-6 col-span-2"
+                      onChange={(e) => handleStateChange(e, 'to')}
+                    >
+                      {(state) => <SelectItem key={state.key}>{state.value}</SelectItem>}
+                    </Select>
+                 
                 </div>
-                <Input name={'description'} label={'Project Description'}/>
+                <Input placeholder='Dumbbells' name={'description'} label={'Project Description'}/>
                 <div className='mt-6 flex flex-col z-40'>
                     <label className='text-text-400 font-semibold mb-2 ' htmlFor='issueDate'>Invoice Date</label>
                     <DatePicker  showIcon className='px-2 py-2 rounded-lg border border-text-500' id="issueDate" name="issueDate" selected={startDate} onChange={(date) => setStartDate(date)} />    
                 </div>   
-                <Button className="bg-purple text-white px-6 py-3 my-10 rounded-full" defaultText='Create' pendingText='Creating...'/>
+                <Button className="bg-purple text-white px-6 py-3 my-10 rounded-full" defaultText='Create' pendingText='Creating...'/> 
                 {/* <h2 className='text-text-500 text-xl font-semibold my-6'>Items List</h2> */}
       
             </form>
