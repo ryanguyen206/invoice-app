@@ -7,7 +7,6 @@ import "react-datepicker/dist/react-datepicker.css";
 import {Modal, ModalContent, ModalHeader, ModalBody, Select, SelectSection, SelectItem, Input} from "@nextui-org/react";
 import Button from '../Button';
 import { oneCountry, cityAPIResponse } from '@/libs/get';
-import {useForm} from 'react-hook-form'
 import { LuAsterisk } from "react-icons/lu";
 
 interface CreateInvoiceProps {
@@ -30,9 +29,6 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
 
     const [toCity, setToCity] = useState('');
     const [toState, setToState] = useState('');
-
-
-    const {register} = useForm()
 
     const handleStateChange = async (e: React.ChangeEvent<HTMLSelectElement>, type : 'to' | 'from') => {
 
