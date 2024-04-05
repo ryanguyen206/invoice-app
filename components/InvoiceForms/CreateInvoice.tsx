@@ -8,6 +8,7 @@ import {Modal, ModalContent, ModalHeader, ModalBody, Select, SelectSection, Sele
 import Button from '../Button';
 import { oneCountry, cityAPIResponse } from '@/libs/get';
 import {useForm} from 'react-hook-form'
+import { LuAsterisk } from "react-icons/lu";
 
 interface CreateInvoiceProps {
     isOpen : boolean
@@ -70,7 +71,7 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
   return (
 
         <>
-        <Modal isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior={scrollBehavior}>
+        <Modal size='xl' isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior={scrollBehavior}>
           <ModalContent>
             {(onClose) => (
               <>
@@ -83,27 +84,39 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                     toast.success(response.message)
             }
         }>
+             
                 <h2 className='text-purple text-xl font-semibold mb-6'>Bill From</h2>
-                <Input {...register("firstName")}      isRequired name={'street'} label={'Street Address'} placeholder='2039 Swag St' />
+                <div className='flex gap-x-1'>
+                  <LuAsterisk className='text-red mb-6'/>
+                  <p>= required</p>
+                </div>
+
+                <Input size='lg' isRequired name={'street'} label={'Street Address'} placeholder='2039 Swag St' />
+
+
                 
                 <div className='mt-6 grid grid-cols-2 '>
                       <Select
                       items={cities}
                       label="City"
+                      size='lg' 
                       placeholder="Select a city (state first)"
                       className=""
+                      isRequired
                       onChange={(e) => handleCityChange(e, 'from')}
                    
                     >
                       {(city) => <SelectItem key={city.value}>{city.value}</SelectItem>}
                     </Select>
                 
-                    <div className='ml-10'><Input name={'postCode'} placeholder='98112' label={'Post Code'}/></div>    
+                    <div className='ml-10'><Input isRequired size='lg' name={'postCode'} placeholder='98112' label={'Post Code'}/></div>    
                     <Select
                       items={states}
                       label="Country"
                       placeholder="Select a country"
                       className="mt-6 col-span-2"
+                      isRequired
+                      size='lg'
                       onChange={(e) => handleStateChange(e, 'from')}
                     >
                       {(state) => <SelectItem key={state.key}>{state.value}</SelectItem>}
@@ -115,9 +128,9 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                 <h2 className='text-purple text-xl font-semibold mb-6 mt-10'>Bill To</h2>
            
                 <div className='flex flex-col space-y-6 -z-10'>  
-                    <Input name={'toName'} placeholder='John Doe' label={`Client's Name`}/>
-                    <Input name={'toEmail'} placeholder='johndoe@gmail.com' label={`Client's Email`}/>
-                    <Input name={'toStreet'} placeholder='2039 Happy Place' label={'Street Address'} />
+                    <Input size='lg'       isRequired name={'toName'} placeholder='John Doe' label={`Client's Name`}/>
+                    <Input size='lg'     isRequired name={'toEmail'} placeholder='johndoe@gmail.com' label={`Client's Email`}/>
+                    <Input  size='lg'    isRequired name={'toStreet'} placeholder='2039 Happy Place' label={'Street Address'} />
                 </div>
 
                 <div className='mt-6 grid grid-cols-2 mb-6 '>
@@ -126,15 +139,19 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                       label="City"
                       placeholder="Select a city (state first)"
                       className=""
+                      isRequired
+                      size='lg'
                       onChange={(e) => handleCityChange(e, 'to')}
                    
                     >
                       {(city) => <SelectItem key={city.value}>{city.value}</SelectItem>}
                     </Select>
-                    <div className='ml-10'><Input name={'toPostCode'} placeholder='23021' label={'Post Code'}/></div>    
+                    <div className='ml-10'><Input size='lg' isRequired name={'toPostCode'} placeholder='23021' label={'Post Code'}/></div>    
                     <Select
                       items={states}
                       label="Country"
+                      isRequired
+                      size='lg'
                       placeholder="Select a country"
                       className="mt-6 col-span-2"
                       onChange={(e) => handleStateChange(e, 'to')}
@@ -143,7 +160,7 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                     </Select>
                  
                 </div>
-                <Input placeholder='Dumbbells' name={'description'} label={'Project Description'}/>
+                <Input size='lg' isRequired placeholder='Dumbbells' name={'description'} label={'Project Description'}/>
                 <div className='mt-6 flex flex-col z-40'>
                     <label className='text-text-400 font-semibold mb-2 ' htmlFor='issueDate'>Invoice Date</label>
                     <DatePicker  showIcon className='px-2 py-2 rounded-lg border border-text-500' id="issueDate" name="issueDate" selected={startDate} onChange={(date) => setStartDate(date)} />    
