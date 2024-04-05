@@ -3,7 +3,6 @@ import type { Invoice } from '@prisma/client'
 import InvoiceCard from './InvoiceCard'
 import emptyInvoice from '@/public/assets/illustration-empty.svg'
 import Image from 'next/image'
-Image
 
 interface InvoicesProps {
     invoices: Invoice[]
