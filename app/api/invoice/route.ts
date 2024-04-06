@@ -7,7 +7,7 @@ export async function GET(req: NextRequest, res : NextResponse) {
     const session = await getServerSession(authOptions)
 
     const id = req.nextUrl.searchParams.get("id")
-    console.log(session, id)
+
 
     const invoice = await prisma.invoice.findUnique({
         where:{

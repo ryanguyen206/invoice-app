@@ -9,12 +9,10 @@ import type { Invoice } from '@prisma/client'
 const Test =  async ({id}: {id:string}) => {
 
      const response = await fetch(`${process.env.NEXTAUTH_URL}/api/invoice?id=${id}`,
-        { cache: "no-cache", method: "GET", headers: headers() }
+        { cache: "no-cache", method: "GET" }
         )
 
         const invoice : Invoice = await response.json()
-    console.log(invoice)
-
 
     
   // const response = await fetch(`${process.env.NEXTAUTH_URL}/api/invoices`,
