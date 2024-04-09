@@ -22,7 +22,7 @@ const Input : FC<InputProps> = ({name, label, value, onChange}) => {
                 type={name}
                 autoComplete={name}
                 required
-                className="block w-full text-lg  rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-1  "
+                className="block w-full text-lg  rounded-md border-0 py-1.5 px-2 text-gray-900 shadow-sm ring-2 ring-gray-200 "
             />
         </div>
     </div>
