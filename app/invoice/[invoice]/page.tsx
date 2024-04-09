@@ -1,13 +1,20 @@
-import { Suspense } from "react";
+import { Suspense, } from "react";
+
 import Loading from "./loading";
-import Test from "@/components/Test";
+import SingleInvoice from "@/app/invoice/[invoice]/SingleInvoice";
+import GoBack from "@/components/GoBack";
 
 
 export default function Page({ params }: { params: { invoice: string } }) {
 
     return (
+
         <Suspense fallback={<Loading />}>
-            <Test id={params.invoice} />
+            <div className="mt-20 mx-10 md:mx-20">
+            <GoBack/>
+            <SingleInvoice id={params.invoice} />
+            </div>
+   
         </Suspense>
     )
   

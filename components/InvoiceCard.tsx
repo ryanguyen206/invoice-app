@@ -24,7 +24,7 @@ const Invoice : FC<InvoiceProps> = ({invoice}) => {
           <p className='text-text-400 mb-2 lg:mb-0 lg:ml-20'>Due <span className='font-bold'>{invoice.issueDate?.toDateString()}</span> </p>
           <p className='font-bold text-xl tracking-wide'>$500.00</p>
         </div>
-        <StatusChip isPaid={true}/>
+        <StatusChip isPaid={invoice.paid}/>
         <Image className='hidden xl:block' src={rightArrow} alt='Click to view invoice'/> 
       </div>
 
