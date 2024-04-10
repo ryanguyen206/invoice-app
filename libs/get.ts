@@ -14,6 +14,9 @@ export const getInvoice = async (session: Session | null)  => {
         const invoices = await prisma.invoice.findMany({
             where: {
                 userId: user.id
+            },
+            orderBy: {
+                createdAt:'desc'
             }
         })
         return invoices
