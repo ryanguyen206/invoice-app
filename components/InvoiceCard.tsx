@@ -6,6 +6,8 @@ import Image from 'next/image';
 import rightArrow from '@/public/assets/icon-arrow-right.svg'
 import {Chip} from "@nextui-org/react";
 import StatusChip from './StatusChip';
+import { dateFormatter } from '@/libs/dateFormatter';
+
 
 interface InvoiceProps {
     invoice: Invoice
@@ -21,7 +23,7 @@ const Invoice : FC<InvoiceProps> = ({invoice}) => {
       </div>
       <div className='flex items-center justify-between lg:w-[70%]   '>
         <div className='lg:flex lg:items-center lg:w-2/3 lg:justify-between'>
-          <p className='text-text-400 mb-2 lg:mb-0 lg:ml-20'>Due <span className='font-bold'>{invoice.issueDate?.toDateString()}</span> </p>
+          <p className='text-text-400 mb-2 lg:mb-0 lg:ml-20'>Due <span className='font-bold'>{dateFormatter(invoice.issueDate)}</span> </p>
           <p className='font-bold text-xl tracking-wide'>$500.00</p>
         </div>
         <StatusChip isPaid={invoice.paid}/>
