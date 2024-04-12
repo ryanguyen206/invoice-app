@@ -16,6 +16,12 @@ interface CreateInvoiceProps {
     states: oneState[]
 }
 
+export interface items {
+  name: string
+  quantity: number
+  price: number
+}
+
 const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceProps) => {
  
     const [startDate, setStartDate] = useState<Date | null>(new Date());
@@ -24,34 +30,43 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
     const [cities, setCities] = useState<cityAPIResponse[]>([])
     const [toCities, setToCities] = useState<cityAPIResponse[]>([])
 
-    const [fromCity, setFromCity] = useState('');
-    const [fromState, setFromState] = useState('');
+    const [fromLocation, setFromLocation] = useState({ city: '', state: '' });
+    const [toLocation, setToLocation] = useState({ city: '', state: '' });
 
-    const [toCity, setToCity] = useState('');
-    const [toState, setToState] = useState('');
 
-    const handleStateChange = async (e: React.ChangeEvent<HTMLSelectElement>, type : 'to' | 'from') => {
+    const [name, setName] = useState<string>("")
+    const [price, setPrice] = useState(0)
+    const [quantity, setQuantity] = useState(0)
+    const [formList, setFormList] = useState<items[]>([])
 
-      const value = e.target.value
+    const handleAddItem = () => {
+      if (isNaN(price) || isNaN(quantity)) {
+        toast.error("Price and quantity must be a number!")
+        return
+      }
+      setFormList(prevState => [...prevState, {
+        name: name,
+        price: price,
+        quantity: quantity
+      }]);
+
+      setName("")
+      setPrice(0)
+      setQuantity(0)
+    }
+
+    const handleLocationChange = async (e: React.ChangeEvent<HTMLSelectElement>, type: 'to' | 'from', field: 'city' | 'state') => {
+      const value = e.target.value;
       if (type === 'from') {
-        setFromState(value)
+        setFromLocation(prevState => ({ ...prevState, [field]: value }));
       } else {
-        setToState(value)
+        setToLocation(prevState => ({ ...prevState, [field]: value }));
       }
       // Fetch cities for the selected state
-      await fetchCities(e.target.value, type);
-    };
-
-
-    const handleCityChange = async (e: React.ChangeEvent<HTMLSelectElement>, type : 'to' | 'from') => {
-      const value = e.target.value
-      if (type === 'from') {
-        setFromCity(value)
-      } else {
-        setToCity(value)
+      if (field === 'state') {
+        await fetchCities(value, type);
       }
     };
-
   
     const fetchCities = async (stateCode : string, type : 'to' | 'from') => {
       const data = await fetch(`/api/cities?stateCode=${stateCode}`)
@@ -63,6 +78,8 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
       }
     
     };   
+
+ 
     
   return (
 
@@ -75,7 +92,7 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                 <ModalBody>
                 <form action={
                     async (formData) => {
-                    const response = await createInvoice(formData, fromState, fromCity, toState, toCity)
+                    const response = await createInvoice(formData, fromLocation.state, fromLocation.city, toLocation.state, toLocation.city, formList)
                     if (response.error) {
                       toast.error(response.message)
                     } else {
@@ -103,7 +120,7 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                       placeholder="Select a city (state first)"
                       className=""
                       isRequired
-                      onChange={(e) => handleCityChange(e, 'from')}
+                      onChange={(e) => handleLocationChange(e, 'from', 'city')}
                    
                     >
                       {(city) => <SelectItem key={city.value}>{city.value}</SelectItem>}
@@ -117,7 +134,7 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                       className="mt-6 col-span-2"
                       isRequired
                       size='lg'
-                      onChange={(e) => handleStateChange(e, 'from')}
+                      onChange={(e) => handleLocationChange(e, 'from', 'state')}
                     >
                       {(state) => <SelectItem key={state.key}>{state.value}</SelectItem>}
                     </Select>
@@ -141,7 +158,7 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                       className=""
                       isRequired
                       size='lg'
-                      onChange={(e) => handleCityChange(e, 'to')}
+                      onChange={(e) => handleLocationChange(e, 'to', 'city')}
                    
                     >
                       {(city) => <SelectItem key={city.value}>{city.value}</SelectItem>}
@@ -154,7 +171,7 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                       size='lg'
                       placeholder="Select a state"
                       className="mt-6 col-span-2"
-                      onChange={(e) => handleStateChange(e, 'to')}
+                      onChange={(e) => handleLocationChange(e, 'to', 'state')}
                     >
                       {(state) => <SelectItem key={state.key}>{state.value}</SelectItem>}
                     </Select>
@@ -165,9 +182,46 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                     <label className='text-text-400 font-semibold mb-2 ' htmlFor='issueDate'>Invoice Date</label>
                     <DatePicker  showIcon className='px-2 py-2 rounded-lg border border-text-500' id="issueDate" name="issueDate" selected={startDate} onChange={(date) => setStartDate(date)} />    
                 </div>   
+
+                <div className="w-full">
+                    <div className="">
+                      <h2 className='text-text-500 text-xl font-semibold my-6'>Items List</h2>
+                      <table className='w-full'>
+                        <thead className='w-full'>
+                          <tr className=''>
+                            <th>Name</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                          </tr>
+                        </thead>
+                        <tbody className='w-full border'>
+                          {formList.map(swag => (
+                            <tr className='' key={swag.name}>
+                              <td>{swag.name}</td>
+                              <td>{swag.quantity}</td>
+                              <td>{swag.price}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                </div>
+                              
+
+                <div className='flex space-x-6'>
+                  <Input value={name} onValueChange={setName} size='lg' name={'itemName'} placeholder='Dumbells' label={`Item`}/>
+                  <Input value={quantity.toString()} onValueChange={(value: string) => setQuantity(parseInt(value))} className='w-1/3' size='lg'  name={'itemQuantity'} placeholder='2' label={`Qty`}/>
+                  <Input value={price.toString()} onValueChange={(value: string) => setPrice(parseFloat(value))} size='lg'  name={'itemPrice'} placeholder='156' label={`Price`}/>
+                </div>
+
+                <div onClick={() => handleAddItem()} className='mt-8 cursor-pointer py-3 px-6 text-text-400 bg-bg_light hover:bg-text-300 rounded-full items-center flex justify-center'>
+                  <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg"><path d="M6.313 10.023v-3.71h3.71v-2.58h-3.71V.023h-2.58v3.71H.023v2.58h3.71v3.71z" fill="#7E88C3" fill-rule="nonzero"/></svg>
+                  <p className='text-center' >Add New Item</p>
+                </div>
+     
                 <Button className="bg-purple text-white px-6 py-3 my-10 rounded-full" defaultText='Create' pendingText='Creating...'/> 
-                {/* <h2 className='text-text-500 text-xl font-semibold my-6'>Items List</h2> */}
-      
+               
+               
             </form>
                 </ModalBody>
               </>

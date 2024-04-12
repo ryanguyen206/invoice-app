@@ -3,8 +3,9 @@ import { getServerSession } from 'next-auth'
 import prisma from '../libs/prismadb'
 import { authOptions } from '../libs/auth'
 import { revalidatePath } from 'next/cache'
+import { items } from '@/components/Forms/CreateInvoice'
 
-export const createInvoice = async (formData: FormData, fromState : string, fromCity : string, toState : string, toCity : string ) => {
+export const createInvoice = async (formData: FormData, fromState : string, fromCity : string, toState : string, toCity : string, items : items[] ) => {
     const session = await getServerSession(authOptions)
 
     const street = formData.get("street")
@@ -53,11 +54,24 @@ export const createInvoice = async (formData: FormData, fromState : string, from
                 issueDate: formattedDate,
                 user: {
                     connect: { id: user?.id } 
+                },
+                items: {
+                    create: items.map(item => ({
+                        name: item.name,
+                        quantity: item.quantity,
+                        price: item.price
+                    }))
                 }
+            },
+            include: {
+                items: true
+            },
+            
             }
-        });
+        );
+
     } catch(e) {
-        console.log(e)
+        return {message: 'Error creating invoice'}
     }
   
 

@@ -1,7 +1,6 @@
 import prisma from '@/libs/prismadb'
 import { Session } from 'next-auth'
 import axios from 'axios'
-import type { Invoice } from '@prisma/client'
 
 export const getInvoice = async (session: Session | null)  => {
     const user = await prisma.user.findFirst({

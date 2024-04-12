@@ -2,6 +2,7 @@
 import { getServerSession } from 'next-auth'
 import prisma from '../libs/prismadb'
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
 
 export const deleteInvoice = async (id :string) => {
@@ -17,6 +18,7 @@ export const deleteInvoice = async (id :string) => {
     } catch (error) {
         return { success: false, message: "An error occurred while deleting the invoice." };
     }
+    revalidatePath('/')
     redirect('/')
 
 }

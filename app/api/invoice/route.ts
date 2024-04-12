@@ -8,6 +8,9 @@ export async function GET(req: NextRequest, res : NextResponse) {
     const invoice = await prisma.invoice.findUnique({
         where:{
             id:id as string
+        },
+        include:{
+            items:true
         }
     })
 
