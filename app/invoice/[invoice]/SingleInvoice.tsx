@@ -25,12 +25,12 @@ const SingleInvoice = async ({ id }: { id: string }) => {
       <Card className="rounded-md px-6 py-4">
         <CardBody className="">
           <div className="flex items-center justify-between">
-            <div className="flex items-center justify-between w-full lg:max-w-fit md:space-x-4">
+            <div className="flex items-center justify-between w-full lg:max-w-fit md:space-x-6 lg:justify-start md:max-w-min">
               <p className="text-text-500">Status</p>
               <StatusChip isPaid={realInvoice.paid} />
             </div>
 
-            <Buttons className="hidden lg:block" invoice={realInvoice} />
+            <Buttons className="hidden md:flex" invoice={realInvoice} />
           </div>
         </CardBody>
       </Card>

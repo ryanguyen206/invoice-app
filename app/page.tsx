@@ -26,7 +26,7 @@ export default async function Home() {
   // const invoices : Invoice[] = await response.json()
 
   return (
-    <main className="mt-20 mx-10 xl:mx-20">
+    <main className="mt-20 mx-10 lg:mx-20">
         <Header invoices={invoices} states={states}/>
         <Suspense fallback={<Loading/>}>
           <Invoices invoices={invoices}/>

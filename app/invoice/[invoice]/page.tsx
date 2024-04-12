@@ -10,7 +10,7 @@ export default function Page({ params }: { params: { invoice: string } }) {
     return (
 
         <Suspense fallback={<Loading />}>
-            <div className="mt-20 mx-10 md:mx-20">
+            <div className="mt-20 mx-10 lg:mx-20">
             <GoBack/>
             <SingleInvoice id={params.invoice} />
             </div>
