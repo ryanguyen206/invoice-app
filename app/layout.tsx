@@ -29,12 +29,12 @@ export default async function RootLayout({
   <body className={`${leage_spartan.className} min-h-screen bg-bg_light `}>
         <Providers>
         <Toaster position="top-center" />
-        <div className="flex">
+        <div className="flex flex-col lg:flex-row">
         
           <SessionProvider session={session}>
         
             <Navbar/>
-            <div className="container bg-bg_light h-full mx-auto xl:px-30 max-w-6xl">
+            <div className="container bg-bg_light h-full mx-auto max-w-6xl">
               {children}
             </div>
     

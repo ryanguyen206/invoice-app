@@ -24,7 +24,7 @@ const Header : FC<HeaderProps> = ({invoices, states}) => {
         </div>
         <div>
           <div  className='cursor-pointer bg-purple  text-white py-2 px-6 rounded-full flex gap-x-4  items-center'>
-            <div className='bg-white border rounded-full p-3'>
+            <div className='bg-white border rounded-full p-3 hidden lg:block'>
               <Image  className='' alt='Plus Icon meant for adding invoice' src={plusIcon}/>
             </div>
             <Button onPress={onOpen} className='bg-purple text-white text-2xl'>New <span className='hidden md:block'>Invoice</span></Button>

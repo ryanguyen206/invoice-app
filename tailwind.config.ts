@@ -10,7 +10,11 @@ const config: Config = {
   ],
   theme: {
     screens: {
-      md:'850px'
+      sm:'640px',
+      md:'850px',
+      lg:'1024px',
+      xl:'1280px',
+      '2xl':'1536px'
     },
     extend: {
       backgroundImage: {
