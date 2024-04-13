@@ -8,6 +8,7 @@ import {Modal, ModalContent, ModalHeader, ModalBody, Select, SelectSection, Sele
 import Button from '../Button';
 import { oneState, cityAPIResponse } from '@/libs/get';
 import { LuAsterisk } from "react-icons/lu";
+import deleteIcon from '@/public/assets/icon-delete.svg'
 
 interface CreateInvoiceProps {
     isOpen : boolean
@@ -35,24 +36,32 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
 
 
     const [name, setName] = useState<string>("")
-    const [price, setPrice] = useState(0)
-    const [quantity, setQuantity] = useState(0)
+    const [price, setPrice] = useState("")
+    const [quantity, setQuantity] = useState("")
     const [formList, setFormList] = useState<items[]>([])
 
+    useEffect(() => {
+      console.log(formList)
+    
+    
+    }, [formList])
+    
+
     const handleAddItem = () => {
-      if (isNaN(price) || isNaN(quantity)) {
+      if (isNaN(parseInt(price)) || isNaN(parseInt(quantity))) {
         toast.error("Price and quantity must be a number!")
         return
       }
       setFormList(prevState => [...prevState, {
         name: name,
-        price: price,
-        quantity: quantity
+        price: parseInt(price),
+        quantity: parseInt(quantity)
       }]);
 
+      console.log(formList)
       setName("")
-      setPrice(0)
-      setQuantity(0)
+      setPrice("")
+      setQuantity("")
     }
 
     const handleLocationChange = async (e: React.ChangeEvent<HTMLSelectElement>, type: 'to' | 'from', field: 'city' | 'state') => {
@@ -81,6 +90,10 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
 
  
     
+    function handleDelete(index: number): void {
+      setFormList(prevFormList => prevFormList.filter((_, i) => i !== index));
+    }
+
   return (
 
         <>
@@ -145,7 +158,7 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                 <h2 className='text-purple text-xl font-semibold mb-6 mt-10'>Bill To</h2>
            
                 <div className='flex flex-col space-y-6 -z-10'>  
-                    <Input size='lg'       isRequired name={'toName'} placeholder='John Doe' label={`Client's Name`}/>
+                    <Input size='lg'     isRequired name={'toName'} placeholder='John Doe' label={`Client's Name`}/>
                     <Input size='lg'     isRequired name={'toEmail'} placeholder='johndoe@gmail.com' label={`Client's Email`}/>
                     <Input  size='lg'    isRequired name={'toStreet'} placeholder='2039 Happy Place' label={'Street Address'} />
                 </div>
@@ -185,21 +198,23 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
 
                 <div className="w-full">
                     <div className="">
-                      <h2 className='text-text-500 text-xl font-semibold my-6'>Items List</h2>
+                      <h2 className='text-purple text-xl font-bold my-6'>Items List</h2>
                       <table className='w-full'>
-                        <thead className='w-full'>
-                          <tr className=''>
-                            <th>Name</th>
-                            <th>Quantity</th>
-                            <th>Price</th>
+                        <thead className='w-full '>
+                          <tr className='flex justify-evenly space-x-6 text-text-400 border-b'>
+                            <th className='w-1/3  text-left'>Name</th>
+                            <th className='w-1/3  text-left'>Quantity</th>
+                            <th className='w-1/3  text-left'>Price</th>
+                            <th className='w-1/3  text-left'></th>
                           </tr>
                         </thead>
-                        <tbody className='w-full border'>
-                          {formList.map(swag => (
-                            <tr className='' key={swag.name}>
-                              <td>{swag.name}</td>
-                              <td>{swag.quantity}</td>
-                              <td>{swag.price}</td>
+                        <tbody className='w-full '>
+                          {formList.map((swag, idx) => (
+                            <tr className='flex justify-evenly space-x-6 border-b ' key={swag.name}>
+                              <td className='w-1/3  text-left'>{swag.name}</td>
+                              <td className='w-1/3  text-left'>{swag.quantity}</td>
+                              <td className='w-1/3  text-left'>{swag.price}</td>
+                              <td onClick={() => handleDelete(idx)} className='w-1/3  text-left'><svg width="13" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M11.583 3.556v10.666c0 .982-.795 1.778-1.777 1.778H2.694a1.777 1.777 0 01-1.777-1.778V3.556h10.666zM8.473 0l.888.889h3.111v1.778H.028V.889h3.11L4.029 0h4.444z" fill="#888EB0" fill-rule="nonzero"/></svg>  </td>
                             </tr>
                           ))}
                         </tbody>
@@ -208,10 +223,10 @@ const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceP
                 </div>
                               
 
-                <div className='flex space-x-6'>
-                  <Input value={name} onValueChange={setName} size='lg' name={'itemName'} placeholder='Dumbells' label={`Item`}/>
-                  <Input value={quantity.toString()} onValueChange={(value: string) => setQuantity(parseInt(value))} className='w-1/3' size='lg'  name={'itemQuantity'} placeholder='2' label={`Qty`}/>
-                  <Input value={price.toString()} onValueChange={(value: string) => setPrice(parseFloat(value))} size='lg'  name={'itemPrice'} placeholder='156' label={`Price`}/>
+                <div className='flex space-x-6 mt-6'>
+                  <Input  value={name} onValueChange={setName} size='lg' name={'itemName'} className='w-1/3' placeholder='Dumbells' label={`Item`}/>
+                  <Input type='number' value={quantity} onValueChange={(value: string) => setQuantity(value)} className='w-1/3' size='lg'  name={'itemQuantity'} placeholder='2' label={`Qty`}/>
+                  <Input type='number' value={price} onValueChange={(value: string) => setPrice(value)} size='lg' className='w-1/3'  name={'itemPrice'} placeholder='156' label={`Price`}/>
                 </div>
 
                 <div onClick={() => handleAddItem()} className='mt-8 cursor-pointer py-3 px-6 text-text-400 bg-bg_light hover:bg-text-300 rounded-full items-center flex justify-center'>
