@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import type { Invoice } from "@prisma/client";
+import type { Invoice, Item } from "@prisma/client";
 import { GoDotFill } from "react-icons/go";
 import Link from "next/link";
 import Image from "next/image";
@@ -9,10 +9,22 @@ import StatusChip from "./StatusChip";
 import { dateFormatter } from "@/libs/dateFormatter";
 
 interface InvoiceProps {
-  invoice: Invoice;
+  invoice: any;
 }
 
 const Invoice: FC<InvoiceProps> = ({ invoice }) => {
+  console.log(invoice)
+  console.log(invoice.items)
+
+
+  const calculateTotal = () => {
+    let total = 0;
+    invoice.items.forEach((item: Item) => {
+      total += item.price * item.quantity;
+    });
+    return total;
+  };
+
   return (
     <Link className="" href={`/invoice/${invoice.id}`}>
       {/* small */}
@@ -56,7 +68,7 @@ const Invoice: FC<InvoiceProps> = ({ invoice }) => {
           <p className="text-text-500 text-lg font-semibold   w-1/5">
             {invoice.toName}
           </p>
-          <p className="font-bold text-xl tracking-wide  w-1/5">$500.00</p>
+          <p className="font-bold text-xl tracking-wide  w-1/5">${calculateTotal()}</p>
           <StatusChip className="w-[17%] flex justify-center" isPaid={invoice.paid} />
           <Image
               className="ml-6"

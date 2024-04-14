@@ -9,7 +9,6 @@ interface InvoicesProps {
 }
 
 const Invoices : FC<InvoicesProps> = ({invoices}) => {
-  
   return (
     <>
        {invoices?.length === 0  ? 

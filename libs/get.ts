@@ -16,6 +16,9 @@ export const getInvoice = async (session: Session | null)  => {
             },
             orderBy: {
                 createdAt:'desc'
+            },
+            include:  {
+                items:true
             }
         })
         return invoices

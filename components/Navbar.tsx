@@ -10,7 +10,6 @@ import { usePathname } from "next/navigation";
 const Navbar = () => {
   const { data: session } = useSession();
   const pathname = usePathname()
-  console.log(pathname)
 
   if (pathname === '/sign-in' || pathname === '/register') {
     return null

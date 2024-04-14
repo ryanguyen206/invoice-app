@@ -14,9 +14,7 @@ const DeleteModal = ({id} : {id: string}) => {
           {(onClose) => (
             <>
             <form action={async () => {
-                console.log('clicked')
                 const response = await deleteInvoice(id)
-                console.log(response)
             }}>
             <ModalHeader className="flex flex-col gap-1 text-xl">Confirm Deletion</ModalHeader>
               <ModalBody>
