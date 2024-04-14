@@ -13,8 +13,7 @@ interface InvoiceProps {
 }
 
 const Invoice: FC<InvoiceProps> = ({ invoice }) => {
-  console.log(invoice)
-  console.log(invoice.items)
+
 
 
   const calculateTotal = () => {

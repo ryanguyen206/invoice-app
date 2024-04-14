@@ -4,7 +4,6 @@ import Header from "@/components/Header";
 import { authOptions } from "@/libs/auth";
 import { getInvoice } from "@/libs/get";
 import Invoices from "@/components/Invoices";
-import { getStates, getCities } from "@/libs/get";
 import { Suspense } from "react";
 import Loading from "./loading";
 
@@ -16,8 +15,10 @@ export default async function Home() {
   }
 
   const invoices = await getInvoice(session)
-  const states  = await getStates()
 
+
+  const data = await fetch(`${process.env.NEXTAUTH_URL}/api/states`)
+  const states = await data.json()
 
   // const response = await fetch(`${process.env.NEXTAUTH_URL}/api/invoices`,
   // { cache: "no-cache", method: "GET", headers: headers() }
