@@ -71,10 +71,6 @@ const CreateInvoice = ({
   const router = useRouter();
   const form = useForm<FormData>({
     defaultValues: async () => {
-      const data = await fetch(`/api/cities?stateCode=US-WA`);
-      const response = await data.json();
-      console.log(response);
-
       return {
         street: "p",
         city: "",
@@ -115,7 +111,6 @@ const CreateInvoice = ({
   const handleStateChange = async (state: string, where: "to" | "from") => {
     const data = await fetch(`/api/cities?stateCode=${state}`);
     const response = await data.json();
-    console.log(response, where);
     if (where === "from") {
       setValue("state", state);
       setCities(response);
@@ -135,7 +130,7 @@ const CreateInvoice = ({
 
   const onSubmit = async (data: FieldValues) => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/invoice`,
+      `/api/invoice`,
       {
         method: "POST",
         body: JSON.stringify(data),
