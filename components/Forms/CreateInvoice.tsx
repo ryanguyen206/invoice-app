@@ -72,18 +72,18 @@ const CreateInvoice = ({
   const form = useForm<FormData>({
     defaultValues: async () => {
       return {
-        street: "p",
+        street: "",
         city: "",
         state: "",
-        postCode: "12345",
-        toStreet: "12345",
+        postCode: "",
+        toStreet: "",
         toCity: "",
         toState: "",
-        toPostCode: "12345",
-        description: "12345",
+        toPostCode: "",
+        description: "",
         issueDate: new Date(),
-        toName: "12345",
-        toEmail: "123@gmail.com",
+        toName: "",
+        toEmail: "",
         items: [{ name: "", price: 0, quantity: 0 }],
       };
     },
@@ -114,9 +114,11 @@ const CreateInvoice = ({
     if (where === "from") {
       setValue("state", state);
       setCities(response);
+      setValue("city", response[0].value)
     } else {
       setValue("toState", state);
       setToCities(response);
+      setValue("toCity", response[0].value)
     }
   };
 
@@ -137,10 +139,7 @@ const CreateInvoice = ({
         cache: "no-store",
       }
     );
-
-    console.log(response);
     const datam = await response.json();
-    console.log(datam);
     if (datam.success) {
       reset();
       onClose();
@@ -526,7 +525,7 @@ const CreateInvoice = ({
                   <div className="px-3 mb-10">
                     <button
                       disabled={isSubmitting}
-                      className="disabled:text-slate-500 disabled:bg-black px-6 py-3 bg-purple hover:bg-purple_light rounded-full text-white"
+                      className="disabled:text-slate-500 disabled:bg-purple_light px-6 py-3 bg-purple hover:bg-purple_light rounded-full text-white"
                     >
                       {isSubmitting ? "Submitting..." : "Submit"}
                     </button>
