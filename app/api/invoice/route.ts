@@ -22,10 +22,10 @@ export async function GET(req: NextRequest, res : NextResponse) {
     }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest, res : NextResponse) {
     const data = await request.json()
     const session = await getSession()
-    console.log(data, 'sent in')
+
     const user = await prisma.user.findUnique({
         where:{
             email:session?.user?.email as string
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!user) {
-        return {message: 'User not found'}
+        return NextResponse.json({message:"Error not found", success:false})
     }
 
     try {
