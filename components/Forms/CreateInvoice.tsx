@@ -1,245 +1,549 @@
-import { createInvoice } from '@/actions/createInvoice'
-import React, { FC, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
+import { createInvoice } from "@/actions/createInvoice";
+import React, { FC, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import DatePicker from "react-datepicker";
-import 'react-datepicker/dist/react-datepicker-cssmodules.css';
+import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import "react-datepicker/dist/react-datepicker.css";
-import {Modal, ModalContent, ModalHeader, ModalBody, Select, SelectSection, SelectItem, Input} from "@nextui-org/react";
-import Button from '../Button';
-import { oneState, cityAPIResponse } from '@/libs/get';
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  Select,
+  SelectSection,
+  SelectItem,
+  Input,
+} from "@nextui-org/react";
+import Button from "../Button";
+import { oneState, cityAPIResponse } from "@/libs/get";
 import { LuAsterisk } from "react-icons/lu";
-import deleteIcon from '@/public/assets/icon-delete.svg'
+import deleteIcon from "@/public/assets/icon-delete.svg";
+import { FieldValues, useFieldArray, useForm } from "react-hook-form";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface CreateInvoiceProps {
-    isOpen : boolean
-    onOpenChange : () => void
-    onClose: () => void
-    states: oneState[]
+  isOpen: boolean;
+  onOpenChange: () => void;
+  onClose: () => void;
+  states: oneState[];
 }
 
 export interface items {
-  name: string
-  quantity: number
-  price: number
+  name: string;
+  quantity: number;
+  price: number;
 }
 
-const CreateInvoice =  ({isOpen, onOpenChange, onClose, states} : CreateInvoiceProps) => {
- 
-    const [startDate, setStartDate] = useState<Date | null>(new Date());
-    const [scrollBehavior, setScrollBehavior] = React.useState<"outside" | "normal" | "inside" | undefined>("inside");
-  
-    const [cities, setCities] = useState<cityAPIResponse[]>([])
-    const [toCities, setToCities] = useState<cityAPIResponse[]>([])
+type FormData = {
+  street: string;
+  city: string;
+  state: string;
+  postCode: string;
+  toStreet: string;
+  toCity: string;
+  toState: string;
+  toPostCode: string;
+  description: string;
+  issueDate: Date;
+  toName: string;
+  toEmail: string;
+  items: items[];
+};
 
-    const [fromLocation, setFromLocation] = useState({ city: '', state: '' });
-    const [toLocation, setToLocation] = useState({ city: '', state: '' });
+const CreateInvoice = ({
+  isOpen,
+  onOpenChange,
+  onClose,
+  states,
+}: CreateInvoiceProps) => {
+  const [scrollBehavior, setScrollBehavior] = React.useState<
+    "outside" | "normal" | "inside" | undefined
+  >("inside");
 
+  const [cities, setCities] = useState<cityAPIResponse[] | undefined>(
+    undefined
+  );
+  const [toCities, setToCities] = useState<cityAPIResponse[] | undefined>(
+    undefined
+  );
 
-    const [name, setName] = useState<string>("")
-    const [price, setPrice] = useState("")
-    const [quantity, setQuantity] = useState("")
-    const [formList, setFormList] = useState<items[]>([])
+  const router = useRouter();
+  const form = useForm<FormData>({
+    defaultValues: async () => {
+      const data = await fetch(`/api/cities?stateCode=US-WA`);
+      const response = await data.json();
+      console.log(response);
 
-  
-    
+      return {
+        street: "p",
+        city: "",
+        state: "",
+        postCode: "12345",
+        toStreet: "12345",
+        toCity: "",
+        toState: "",
+        toPostCode: "12345",
+        description: "12345",
+        issueDate: new Date(),
+        toName: "12345",
+        toEmail: "123@gmail.com",
+        items: [{ name: "", price: 0, quantity: 0 }],
+      };
+    },
+  });
 
-    const handleAddItem = () => {
-      if (isNaN(parseInt(price)) || isNaN(parseInt(quantity))) {
-        toast.error("Price and quantity must be a number!")
-        return
-      }
-      setFormList(prevState => [...prevState, {
-        name: name,
-        price: parseInt(price),
-        quantity: parseInt(quantity)
-      }]);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    getValues,
+    control,
+    formState: { errors, isSubmitting, isSubmitted },
+  } = form;
 
-      setName("")
-      setPrice("")
-      setQuantity("")
+  const { fields, append, prepend, remove } = useFieldArray({
+    name: "items",
+    control,
+    rules: {
+      required: { value: true, message: "Please have at least one item" },
+      minLength: 1
+    },
+  });
+
+  const handleStateChange = async (state: string, where: "to" | "from") => {
+    const data = await fetch(`/api/cities?stateCode=${state}`);
+    const response = await data.json();
+    console.log(response, where);
+    if (where === "from") {
+      setValue("state", state);
+      setCities(response);
+    } else {
+      setValue("toState", state);
+      setToCities(response);
     }
+  };
 
-    const handleLocationChange = async (e: React.ChangeEvent<HTMLSelectElement>, type: 'to' | 'from', field: 'city' | 'state') => {
-      const value = e.target.value;
-      if (type === 'from') {
-        setFromLocation(prevState => ({ ...prevState, [field]: value }));
-      } else {
-        setToLocation(prevState => ({ ...prevState, [field]: value }));
-      }
-      // Fetch cities for the selected state
-      if (field === 'state') {
-        await fetchCities(value, type);
-      }
-    };
-  
-    const fetchCities = async (stateCode : string, type : 'to' | 'from') => {
-      const data = await fetch(`/api/cities?stateCode=${stateCode}`)
-      const response = await data.json()
-      if (type === 'from') {
-        setCities(response)
-      } else {
-        setToCities(response)
-      }
-    
-    };   
-
- 
-    
-    function handleDelete(index: number): void {
-      setFormList(prevFormList => prevFormList.filter((_, i) => i !== index));
+  const handleCityChange = async (city: string, where: "to" | "from") => {
+    if (where === "from") {
+      setValue("city", city);
+    } else {
+      setValue("toCity", city);
     }
+  };
+
+  const onSubmit = async (data: FieldValues) => {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/invoice`,
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+        cache: "no-store",
+      }
+    );
+
+    console.log(response);
+    const datam = await response.json();
+    console.log(datam);
+    if (datam.success) {
+      reset();
+      onClose();
+      router.refresh();
+
+      toast.success("Invoice created!");
+    } else {
+      toast.error("Something went wrong");
+    }
+  };
 
   return (
-
-        <>
-        <Modal size='xl' isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior={scrollBehavior}>
-          <ModalContent>
-            {(onClose) => (
-              <>
-            <ModalHeader className="flex flex-col gap-1 text-3xl pt-10">New Invoice</ModalHeader>
-                <ModalBody>
-                <form action={
-                    async (formData) => {
-                    const response = await createInvoice(formData, fromLocation.state, fromLocation.city, toLocation.state, toLocation.city, formList)
-                    if (response.error) {
-                      toast.error(response.message)
-                    } else {
-                      onClose()
-                      toast.success(response.message)
-                    }                
-            }
-        }>
-             
-                <h2 className='text-purple text-xl font-semibold mb-6'>Bill From</h2>
-                <div className='flex gap-x-1'>
-                  <LuAsterisk className='text-red mb-6'/>
-                  <p>= required</p>
-                </div>
-
-                <Input size='lg' isRequired name={'street'} label={'Street Address'} placeholder='2039 Swag St' />
-
-
-                
-                <div className='mt-6 grid grid-cols-2 '>
-                      <Select
-                      items={cities}
-                      label="City"
-                      size='lg' 
-                      placeholder="Select a city (state first)"
-                      className=""
-                      isRequired
-                      onChange={(e) => handleLocationChange(e, 'from', 'city')}
-                   
-                    >
-                      {(city) => <SelectItem key={city.value}>{city.value}</SelectItem>}
-                    </Select>
-                
-                    <div className='ml-10'><Input isRequired size='lg' name={'postCode'} placeholder='98112' label={'Post Code'}/></div>    
-                    <Select
-                      items={states}
-                      label="State"
-                      placeholder="Select a state"
-                      className="mt-6 col-span-2"
-                      isRequired
-                      size='lg'
-                      onChange={(e) => handleLocationChange(e, 'from', 'state')}
-                    >
-                      {(state) => <SelectItem key={state.key}>{state.value}</SelectItem>}
-                    </Select>
-
-
-
-                </div>
-                <h2 className='text-purple text-xl font-semibold mb-6 mt-10'>Bill To</h2>
-           
-                <div className='flex flex-col space-y-6 -z-10'>  
-                    <Input size='lg'     isRequired name={'toName'} placeholder='John Doe' label={`Client's Name`}/>
-                    <Input size='lg'     isRequired name={'toEmail'} placeholder='johndoe@gmail.com' label={`Client's Email`}/>
-                    <Input  size='lg'    isRequired name={'toStreet'} placeholder='2039 Happy Place' label={'Street Address'} />
-                </div>
-
-                <div className='mt-6 grid grid-cols-2 mb-6 '>
-                <Select
-                      items={toCities}
-                      label="City"
-                      placeholder="Select a city (state first)"
-                      className=""
-                      isRequired
-                      size='lg'
-                      onChange={(e) => handleLocationChange(e, 'to', 'city')}
-                   
-                    >
-                      {(city) => <SelectItem key={city.value}>{city.value}</SelectItem>}
-                    </Select>
-                    <div className='ml-10'><Input size='lg' isRequired name={'toPostCode'} placeholder='23021' label={'Post Code'}/></div>    
-                    <Select
-                      items={states}
-                      label="State"
-                      isRequired
-                      size='lg'
-                      placeholder="Select a state"
-                      className="mt-6 col-span-2"
-                      onChange={(e) => handleLocationChange(e, 'to', 'state')}
-                    >
-                      {(state) => <SelectItem key={state.key}>{state.value}</SelectItem>}
-                    </Select>
-                 
-                </div>
-                <Input size='lg' isRequired placeholder='Dumbbells' name={'description'} label={'Project Description'}/>
-                <div className='mt-6 flex flex-col z-40'>
-                    <label className='text-text-400 font-semibold mb-2 ' htmlFor='issueDate'>Invoice Date</label>
-                    <DatePicker  showIcon className='px-2 py-2 rounded-lg border border-text-500' id="issueDate" name="issueDate" selected={startDate} onChange={(date) => setStartDate(date)} />    
-                </div>   
-
-                <div className="w-full">
-                    <div className="">
-                      <h2 className='text-purple text-xl font-bold my-6'>Items List</h2>
-                      <table className='w-full'>
-                        <thead className='w-full '>
-                          <tr className='flex justify-evenly space-x-6 text-text-400 border-b'>
-                            <th className='w-1/3  text-left'>Name</th>
-                            <th className='w-1/3  text-left'>Quantity</th>
-                            <th className='w-1/3  text-left'>Price</th>
-                            <th className='w-1/3  text-left'></th>
-                          </tr>
-                        </thead>
-                        <tbody className='w-full '>
-                          {formList.map((swag, idx) => (
-                            <tr className='flex justify-evenly space-x-6 border-b ' key={swag.name}>
-                              <td className='w-1/3  text-left'>{swag.name}</td>
-                              <td className='w-1/3  text-left'>{swag.quantity}</td>
-                              <td className='w-1/3  text-left'>{swag.price}</td>
-                              <td onClick={() => handleDelete(idx)} className='w-1/3 cursor-pointer  text-left'><svg width="13" height="16" xmlns="http://www.w3.org/2000/svg"><path d="M11.583 3.556v10.666c0 .982-.795 1.778-1.777 1.778H2.694a1.777 1.777 0 01-1.777-1.778V3.556h10.666zM8.473 0l.888.889h3.111v1.778H.028V.889h3.11L4.029 0h4.444z" fill="#888EB0" fill-rule="nonzero"/></svg>  </td>
-                            </tr>
+    <>
+      <Modal
+        size="xl"
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        scrollBehavior={scrollBehavior}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1 text-3xl pt-10">
+                New Invoice
+              </ModalHeader>
+              <ModalBody>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                  <h2 className="text-purple text-xl font-semibold mb-6 px-3">
+                    Bill From
+                  </h2>
+                  <div className="px-3 mb-6 ">
+                    <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                      street
+                    </label>
+                    <input
+                      className="appearance-none block w-full font-bold text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                      type="text"
+                      {...register("street", {
+                        required: `Street is required`,
+                      })}
+                    />
+                    {errors.street && (
+                      <p className="text-red">{errors.street.message}</p>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2">
+                    <div className="px-3 mb-6 ">
+                      <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                        City
+                      </label>
+                      <select
+                        className="appearance-none block w-full font-bold text-black  border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                        {...register("city", {
+                          required: `City is required`,
+                        })}
+                        onChange={(e) =>
+                          handleCityChange(e.target.value, "from")
+                        }
+                      >
+                        {cities &&
+                          cities?.map((city) => (
+                            <option key={city.key} value={city.value}>
+                              {city.value}
+                            </option>
                           ))}
-                        </tbody>
-                      </table>
+                      </select>
+                      {errors.city && (
+                        <p className="text-red">{errors.city.message}</p>
+                      )}
                     </div>
-                </div>
-                              
+                    <div className="px-3 mb-6">
+                      <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                        Zip Code
+                      </label>
+                      <input
+                        type="text"
+                        className="appearance-none block w-full font-bold text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                        {...register("postCode", {
+                          required: "Zip code is required",
+                          minLength: {
+                            value: 5,
+                            message: "Length cannot be less than 5 characters",
+                          },
+                          maxLength: {
+                            value: 5,
+                            message: "Length cannot exceed 5 characters",
+                          },
+                        })}
+                      />
+                      {errors.postCode && (
+                        <p className="text-red">{errors.postCode.message}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="px-3 mb-6 ">
+                    <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                      State
+                    </label>
+                    <select
+                      className="appearance-none block w-full font-bold text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                      {...register("state", {
+                        required: `State is required`,
+                      })}
+                      onChange={(e) => {
+                        handleStateChange(e.target.value, "from");
+                      }}
+                    >
+                      {states &&
+                        states?.map((state) => (
+                          <option key={state.key} value={state.key}>
+                            {state.value}
+                          </option>
+                        ))}
+                    </select>
+                    {errors.state && (
+                      <p className="text-red">{errors.state.message}</p>
+                    )}
+                  </div>
+                  {/* Bill To */}
+                  <h2 className="text-purple text-xl font-semibold mb-6 px-3">
+                    Bill To
+                  </h2>
+                  <div className="px-3 mb-6 ">
+                    <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                      Name
+                    </label>
+                    <input
+                      className="appearance-none block w-full font-bold text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                      type="text"
+                      {...register("toName", {
+                        required: `Name is required`,
+                      })}
+                    />
+                    {errors.toName && (
+                      <p className="text-red">{errors.toName.message}</p>
+                    )}
+                  </div>
+                  <div className="px-3 mb-6 ">
+                    <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                      Email
+                    </label>
+                    <input
+                      className="appearance-none block w-full font-bold text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                      type="email"
+                      {...register("toEmail", {
+                        required: `Email is required`,
+                        pattern: {
+                          value:
+                            /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
+                          message: "Invalid email address",
+                        },
+                      })}
+                    />
+                    {errors.toEmail && (
+                      <p className="text-red">{errors.toEmail.message}</p>
+                    )}
+                  </div>
+                  <div className="px-3 mb-6 ">
+                    <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                      street
+                    </label>
+                    <input
+                      className="appearance-none block w-full font-bold text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                      type="text"
+                      {...register("toStreet", {
+                        required: `Street is required`,
+                      })}
+                    />
+                    {errors.toStreet && (
+                      <p className="text-red">{errors.toStreet.message}</p>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2">
+                    <div className="px-3 mb-6 ">
+                      <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                        City
+                      </label>
+                      <select
+                        className="appearance-none block w-full font-bold text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                        {...register("toCity", {
+                          required: `City is required`,
+                        })}
+                        onChange={(e) => handleCityChange(e.target.value, "to")}
+                      >
+                        {toCities &&
+                          toCities?.map((city) => (
+                            <option key={city.key} value={city.value}>
+                              {city.value}
+                            </option>
+                          ))}
+                      </select>
+                      {errors.toCity && (
+                        <p className="text-red">{errors.toCity.message}</p>
+                      )}
+                    </div>
+                    <div className="px-3 mb-6  ">
+                      <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                        Zip Code
+                      </label>
+                      <input
+                        className="appearance-none block w-full font-bold text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                        type="text"
+                        {...register("toPostCode", {
+                          required: "Zip code is required",
+                          minLength: {
+                            value: 5,
+                            message: "Length cannot be less than 5 characters",
+                          },
+                          maxLength: {
+                            value: 5,
+                            message: "Length cannot exceed 5 characters",
+                          },
+                        })}
+                      />
+                      {errors.toPostCode && (
+                        <p className="text-red">{errors.toPostCode.message}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="px-3 mb-6 ">
+                    <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                      State
+                    </label>
+                    <select
+                      className="appearance-none block w-full font-bold text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                      {...register("toState", {
+                        required: `State is required`,
+                      })}
+                      onChange={(e) => {
+                        handleStateChange(e.target.value, "to");
+                      }}
+                    >
+                      {states &&
+                        states?.map((state) => (
+                          <option key={state.key} value={state.key}>
+                            {state.value}
+                          </option>
+                        ))}
+                    </select>
+                    {errors.toState && (
+                      <p className="text-red">{errors.toState.message}</p>
+                    )}
+                  </div>
+                  <div className="px-3 mb-6">
+                    <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                      Issue Date
+                    </label>
+                    <input
+                      className="border-2 px-2 py-1"
+                      type="date"
+                      {...register("issueDate", {
+                        required: "Date is required",
+                        valueAsDate: true,
+                        validate: {
+                          pastDate: (v) =>
+                            new Date(v) >= new Date() || "Cannot be in past",
+                        },
+                      })}
+                    />
+                    {errors.issueDate && (
+                      <p className="text-red">{errors.issueDate.message}</p>
+                    )}
+                  </div>
+                  <div className="px-3 mb-6 ">
+                    <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                      Description
+                    </label>
+                    <input
+                      className="appearance-none block w-full font-bold text-black0 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                      type="text"
+                      {...register("description", {
+                        required: `Description is required`,
+                      })}
+                    />
+                    {errors.description && (
+                      <p className="text-red">{errors.description.message}</p>
+                    )}
+                  </div>
+                  <h2 className="text-purple text-xl font-semibold mb-6 px-3">
+                    Items List
+                  </h2>
+                  {errors.items?.root?.message && <p className="text-red px-3">{errors.items?.root?.message}</p>}
+                  {fields.map((item, i) => (
+                    <div
+                      className="flex px-3 gap-3 mb-6 items-center"
+                      key={item.id}
+                    >
+                      <div>
+                    
+                          <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2">
+                            Name
+                          </label>
+                      
+                        <input
+                          className="appearance-none block w-full font-bold text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                          type="text"
+                          {...register(`items.${i}.name`, {
+                            required: "Item name required",
+                          })}
+                        />
+                        {errors.items &&
+                          errors.items[i] &&
+                          errors?.items[i]?.name && (
+                            <p className="text-red">
+                              {errors.items[i]?.name?.message}
+                            </p>
+                          )}
+                      </div>
+                      <div>
+                       
+                          <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2 ml-1">
+                            Price
+                          </label>
+                       
+                        <input
+                          className="appearance-none block w-full font-bold text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                          type="number"
+                          {...register(`items.${i}.price`, {
+                            valueAsNumber: true,
+                            required: "Price required",
+                            min: {
+                              value: 1,
+                              message: "Must be > than 0",
+                            },
+                          })}
+                        />
+                        {errors.items &&
+                          errors.items[i] &&
+                          errors?.items[i]?.price && (
+                            <p className="text-red">
+                              {errors.items[i]?.price?.message}
+                            </p>
+                          )}
+                      </div>
+                      <div>
+                         
+                          <label className="block uppercase tracking-wide text-text-500 text-sm font-bold mb-2 ml-1">
+                            Quantity
+                          </label>
+                        
+                        <input
+                          className="appearance-none block w-full font-bold text-black border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                          type="number"
+                          {...register(`items.${i}.quantity`, {
+                            valueAsNumber: true,
+                            required: "Quantity required",
+                            min: {
+                              value: 1,
+                              message: "Must be > than 0",
+                            },
+                          })}
+                        />
+                        {errors.items &&
+                          errors.items[i] &&
+                          errors?.items[i]?.quantity && (
+                            <p className="text-red">
+                              {errors.items[i]?.quantity?.message}
+                            </p>
+                          )}
+                      </div>
+                      <Image
+                        className=" border h-full"
+                        onClick={() => remove(i)}
+                        src={deleteIcon}
+                        alt="Delete item"
+                      />
+                    </div>
+                  ))}
+                  <div className="px-3">
+                    <button
+                      className="bg-bg_light text-text-400 font-bold px-3 w-full rounded-full my-6 py-2 hover:bg-text-300"
+                      type="button"
+                      onClick={() =>
+                        append({ name: "", price: 0, quantity: 0 })
+                      }
+                    >
+                      + Add Item
+                    </button>
+                  </div>
 
-                <div className='flex space-x-6 mt-6'>
-                  <Input  value={name} onValueChange={setName} size='lg' name={'itemName'} className='w-1/3' placeholder='Dumbells' label={`Item`}/>
-                  <Input type='number' value={quantity} onValueChange={(value: string) => setQuantity(value)} className='w-1/3' size='lg'  name={'itemQuantity'} placeholder='2' label={`Qty`}/>
-                  <Input type='number' value={price} onValueChange={(value: string) => setPrice(value)} size='lg' className='w-1/3'  name={'itemPrice'} placeholder='156' label={`Price`}/>
-                </div>
+       
 
-                <div onClick={() => handleAddItem()} className='mt-8 cursor-pointer py-3 px-6 text-text-400 bg-bg_light hover:bg-text-300 rounded-full items-center flex justify-center'>
-                  <svg width="11" height="11" xmlns="http://www.w3.org/2000/svg"><path d="M6.313 10.023v-3.71h3.71v-2.58h-3.71V.023h-2.58v3.71H.023v2.58h3.71v3.71z" fill="#7E88C3" fill-rule="nonzero"/></svg>
-                  <p className='text-center' >Add New Item</p>
-                </div>
-     
-                <Button className="bg-purple text-white px-6 py-3 my-10 rounded-full" defaultText='Create' pendingText='Creating...'/> 
-               
-               
-            </form>
-                </ModalBody>
-              </>
-            )}
-          </ModalContent>
-        </Modal>
-        </>
-  )
-}
+                  <div className="px-3 mb-10">
+                    <button
+                      disabled={isSubmitting}
+                      className="disabled:text-slate-500 disabled:bg-black px-6 py-3 bg-purple hover:bg-purple_light rounded-full text-white"
+                    >
+                      {isSubmitting ? "Submitting..." : "Submit"}
+                    </button>
+                  </div>
+                </form>
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
 
-export default CreateInvoice
+export default CreateInvoice;

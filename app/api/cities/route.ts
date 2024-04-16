@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
               iso_a2: 'us',
               lang: 'en',
               state_code: searchParams,
-              limit: '300'
+              limit: '1000'
             },
             headers: {
               'X-RapidAPI-Key': process.env.API_KEY,
