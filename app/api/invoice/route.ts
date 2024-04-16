@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
             })
             console.log(newInvoice)
 
-        return  NextResponse.json({newInvoice, success: true})
+        return  NextResponse.json({message:"Success", success: true})
 
     } catch (error) {
         console.log(error)
