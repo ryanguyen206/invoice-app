@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from '@/libs/prismadb'
-import { authOptions } from "@/libs/auth";
 import { getSession } from "@/libs/serverSession";
-import { Invoice } from "@prisma/client";
-import { revalidatePath } from "next/cache";
 import { items } from "@/components/Forms/CreateInvoice";
 
 export async function GET(req: NextRequest, res : NextResponse) {
@@ -71,7 +68,7 @@ export async function POST(request: NextRequest) {
             })
             console.log(newInvoice)
 
-        return  NextResponse.json({message:"Success", success: true})
+        return NextResponse.json({success:true})
 
     } catch (error) {
         console.log(error)
