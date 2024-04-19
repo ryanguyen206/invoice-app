@@ -501,7 +501,7 @@ const CreateInvoice = ({
                           )}
                       </div>
                       <Image
-                        className=" border h-full"
+                        className="h-full"
                         onClick={() => remove(i)}
                         src={deleteIcon}
                         alt="Delete item"
@@ -525,7 +525,7 @@ const CreateInvoice = ({
                   <div className="px-3 mb-10">
                     <button
                       disabled={isSubmitting}
-                      className="disabled:text-slate-500 disabled:bg-purple_light px-6 py-3 bg-purple hover:bg-purple_light rounded-full text-white"
+                      className="disabled:bg-purple_light px-6 py-3 bg-purple hover:bg-purple_light rounded-full text-white"
                     >
                       {isSubmitting ? "Submitting..." : "Submit"}
                     </button>
