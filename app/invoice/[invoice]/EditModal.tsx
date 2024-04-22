@@ -8,12 +8,13 @@ import {
   useDisclosure,
   Input,
   Select,
+  dataFocusVisibleClasses,
 } from "@nextui-org/react";
 import React, { ChangeEvent, useEffect, useState } from "react";
 import { LuAsterisk } from "react-icons/lu";
 import Button from "@/components/Button";
 import deleteIcon from "@/public/assets/icon-delete.svg";
-import { FieldValues, useForm } from "react-hook-form";
+import { FieldValues, useFieldArray, useForm } from "react-hook-form";
 import Image from "next/image";
 import { cityAPIResponse, oneState } from "@/libs/get";
 import { items } from "@/components/Forms/CreateInvoice";
@@ -22,7 +23,8 @@ import router from "next/navigation";
 import { useRouter } from "next/navigation";
 
 interface EditModalProps {
-  invoice: Invoice;
+  invoice: any;
+  id: string
 }
 
 type FormData = {
@@ -41,7 +43,7 @@ type FormData = {
   items: items[];
 };
 
-const EditModal = ({ invoice }: EditModalProps) => {
+const EditModal = ({ invoice, id }: EditModalProps) => {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [scrollBehavior, setScrollBehavior] = React.useState<
   "outside" | "normal" | "inside" | undefined
@@ -51,7 +53,7 @@ const EditModal = ({ invoice }: EditModalProps) => {
   const [toCities, setToCities] = useState<cityAPIResponse[] | undefined>(
     undefined
   );
-  console.log(invoice)
+
   const router = useRouter()
   const form = useForm<FormData>({
 
@@ -59,19 +61,36 @@ const EditModal = ({ invoice }: EditModalProps) => {
       const data = await fetch(
         `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/states`
       );
+
+      const fart = await fetch(
+        `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/invoice?id=${id}`, {
+          cache:'no-cache'
+        }
+      );
+      const farting = await fart.json();
+      const swag = farting.invoice
+      console.log(swag)
+
+
+
+      const defaultItems = invoice.items.map((item: items) => ({
+        name: item.name || "",
+        price: item.price || 0,
+        quantity: item.quantity || 0
+      }));
+
       const response = await data.json()
-      console.log(response)
       return {
-        street: invoice.street,
-        postCode: invoice.postCode,
-        toPostCode: invoice.toPostCode,
+        street: swag.street,
+        postCode: swag.postCode,
+        toPostCode: swag.toPostCode,
         issueDate: new Date("2020-08-01T00:00:00"),
-        toName: invoice.toName,
+        toName: swag.toName,
         state: response && response[4].value,
-        toEmail: invoice.toEmail,
-        toStreet: invoice.toStreet,
-        items: [{ name: "", price: 0, quantity: 0 }],
-        description: invoice.description,
+        toEmail: swag.toEmail,
+        toStreet: swag.toStreet,
+        items: defaultItems,
+        description: swag.description,
         city: "",
         toCity: "",
         toState:"",
@@ -88,8 +107,19 @@ const EditModal = ({ invoice }: EditModalProps) => {
     reset,
     getValues,
     setValue,
-    formState: { errors, isSubmitting },
+    control,
+    watch,
+    formState: { errors, isSubmitting, isSubmitSuccessful,  },
   } = form;
+
+  const { fields, append, prepend, remove } = useFieldArray({
+    name: "items",
+    control,
+    rules: {
+      required: { value: true, message: "Please have at least one item" },
+      minLength: 1
+    },
+  });
 
   useEffect(() => {
     const getStates = async () => {
@@ -102,6 +132,22 @@ const EditModal = ({ invoice }: EditModalProps) => {
     getStates();
     
   }, []);
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      const fetchData = async () => {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/invoice?id=${id}`,
+          { cache: 'no-cache' }
+        );
+        const data = await response.json();
+        const updatedInvoice = data.invoice;
+        form.reset(updatedInvoice);
+      };
+  
+      fetchData();
+    }
+  }, [isSubmitSuccessful]);
 
 
   const handleCityChange = async (city: string, where: "to" | "from") => {
@@ -127,6 +173,7 @@ const EditModal = ({ invoice }: EditModalProps) => {
   };
 
   const onSubmit = async (data: FieldValues) => {
+    console.log(data)
     const response = await fetch(
       `/api/invoice`,
       {
@@ -135,13 +182,23 @@ const EditModal = ({ invoice }: EditModalProps) => {
         cache: "no-store",
       }
     );
-    const datam = await response.json();
-    if (datam.success) {
-      reset();
+    const responseData = await response.json();
+    if (responseData.success) {
       onClose();
       router.refresh();
-
-      toast.success("Invoice created!");
+      toast.success("Invoice updated!");
+  
+      const updatedInvoiceResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/invoice?id=${id}`,
+        { cache: 'no-cache' }
+      );
+      const updatedInvoiceData = await updatedInvoiceResponse.json();
+      const updatedInvoice = updatedInvoiceData.invoice;
+  
+      form.reset({
+        ...data, 
+        ...updatedInvoice,
+      });
     } else {
       toast.error("Something went wrong");
     }
@@ -426,7 +483,7 @@ const EditModal = ({ invoice }: EditModalProps) => {
                     Items List
                   </h2>
                   {errors.items?.root?.message && <p className="text-red px-3">{errors.items?.root?.message}</p>}
-                  {/* {fields.map((item, i) => (
+                  {fields.map((item, i) => (
                     <div
                       className="flex px-3 gap-3 mb-6 items-center"
                       key={item.id}
@@ -511,14 +568,14 @@ const EditModal = ({ invoice }: EditModalProps) => {
                         alt="Delete item"
                       />
                     </div>
-                  ))} */}
+                  ))} 
                   <div className="px-3">
                     <button
                       className="bg-bg_light text-text-400 font-bold px-3 w-full rounded-full my-6 py-2 hover:bg-text-300"
                       type="button"
-                      // onClick={() =>
-                      //   append({ name: "", price: 0, quantity: 0 })
-                      // }
+                      onClick={() =>
+                        append({ name: "", price: 0, quantity: 0 })
+                      }
                     >
                       + Add Item
                     </button>
@@ -526,7 +583,7 @@ const EditModal = ({ invoice }: EditModalProps) => {
                   <div className="px-3 mb-10">
                     <button
                       disabled={isSubmitting}
-                      className="disabled:text-slate-500 disabled:bg-purple_light px-6 py-3 bg-purple hover:bg-purple_light rounded-full text-white"
+                      className="disabled:bg-purple_light px-6 py-3 bg-purple hover:bg-purple_light rounded-full text-white"
                     >
                       {isSubmitting ? "Submitting..." : "Submit"}
                     </button>

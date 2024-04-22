@@ -17,7 +17,7 @@ const Buttons = ({invoice, className}: ButtonsProps) => {
 
   return (
     <div className={cn("space-x-5 flex justify-center items-center", className)}>
-        <EditModal invoice={invoice} />
+        <EditModal id={invoice.id} invoice={invoice} />
         <DeleteModal id={invoice.id}/>
         <button onClick={() => updateInvoice(invoice.id)}className='py-3 px-5 text-white bg-purple hover:bg-purple_light rounded-full'>Mark as paid </button>
     </div>

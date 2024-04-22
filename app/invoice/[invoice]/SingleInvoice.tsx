@@ -7,7 +7,9 @@ import { Invoice, Item } from "@prisma/client";
 
 const SingleInvoice = async ({ id }: { id: string }) => {
   const response = await fetch(
-    `${process.env.NEXTAUTH_URL}/api/invoice?id=${id}`
+    `${process.env.NEXTAUTH_URL}/api/invoice?id=${id}`, {
+      cache:'no-cache'
+    }
   );
   const data = await response.json();
   const realInvoice = data.invoice;
