@@ -55,51 +55,8 @@ const EditModal = ({ invoice, id }: EditModalProps) => {
   );
 
   const router = useRouter()
-  const form = useForm<FormData>({
-
-    defaultValues: async () => {
-      const data = await fetch(
-        `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/states`
-      );
-
-      const fart = await fetch(
-        `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/invoice?id=${id}`, {
-          cache:'no-cache'
-        }
-      );
-      const farting = await fart.json();
-      const swag = farting.invoice
-      console.log(swag)
-
-
-
-      const defaultItems = invoice.items.map((item: items) => ({
-        name: item.name || "",
-        price: item.price || 0,
-        quantity: item.quantity || 0
-      }));
-
-      const response = await data.json()
-      return {
-        street: swag.street,
-        postCode: swag.postCode,
-        toPostCode: swag.toPostCode,
-        issueDate: new Date("2020-08-01T00:00:00"),
-        toName: swag.toName,
-        state: response && response[4].value,
-        toEmail: swag.toEmail,
-        toStreet: swag.toStreet,
-        items: defaultItems,
-        description: swag.description,
-        city: "",
-        toCity: "",
-        toState:"",
-
-      }
-    }})
+  const form = useForm<FormData>()
     
-
-
 
   const {
     register,
@@ -134,20 +91,30 @@ const EditModal = ({ invoice, id }: EditModalProps) => {
   }, []);
 
   useEffect(() => {
-    if (isSubmitSuccessful) {
-      const fetchData = async () => {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/invoice?id=${id}`,
-          { cache: 'no-cache' }
-        );
-        const data = await response.json();
-        const updatedInvoice = data.invoice;
-        form.reset(updatedInvoice);
-      };
-  
-      fetchData();
-    }
-  }, [isSubmitSuccessful]);
+    const getInvoice = async () => {
+      const updatedInvoiceResponse = await fetch(
+        `${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/invoice?id=${id}`,
+        { cache: 'no-cache' }
+      );
+      const updatedInvoiceData = await updatedInvoiceResponse.json();
+      const updatedInvoice = updatedInvoiceData.invoice;
+      console.log(updatedInvoice, 'rnm')
+
+      const data = await fetch(`/api/cities?stateCode=${updatedInvoice.state}`);
+      const response = await data.json();
+
+      
+      const toCitydata = await fetch(`/api/cities?stateCode=${updatedInvoice.toState}`);
+      const toCityResponse = await toCitydata.json();
+      console.log(toCityResponse)
+
+      setCities(response)
+      setToCities(toCityResponse)
+      
+    form.reset(updatedInvoice)
+    };
+    getInvoice();
+  }, [reset]);
 
 
   const handleCityChange = async (city: string, where: "to" | "from") => {
@@ -186,6 +153,7 @@ const EditModal = ({ invoice, id }: EditModalProps) => {
     if (responseData.success) {
       onClose();
       router.refresh();
+      console.log(form, "before")
       toast.success("Invoice updated!");
   
       const updatedInvoiceResponse = await fetch(
