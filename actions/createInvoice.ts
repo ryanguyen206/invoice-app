@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth'
 import prisma from '../libs/prismadb'
 import { authOptions } from '../libs/auth'
 import { revalidatePath } from 'next/cache'
-import { items } from '@/components/Forms/CreateInvoice'
+import { items } from '@/libs/get'
 
 export const createInvoice = async (formData: FormData, fromState : string, fromCity : string, toState : string, toCity : string, items : items[] ) => {
     const session = await getServerSession(authOptions)
