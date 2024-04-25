@@ -46,7 +46,7 @@ const Invoice: FC<InvoiceProps> = ({ invoice }) => {
                   {dateFormatter(invoice.issueDate)}
                 </span>{" "}
               </p>
-              <p className="font-bold text-xl tracking-wide">$500.00</p>
+              <p className="font-bold text-xl tracking-wide">${calculateTotal()}</p>
             </div>
             <StatusChip isPaid={invoice.paid} />
       

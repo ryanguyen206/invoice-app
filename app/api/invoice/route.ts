@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from '@/libs/prismadb'
 import { getSession } from "@/libs/serverSession";
-import { items } from "@/components/Forms/CreateInvoice";
+import { items } from "@/libs/get";
 
 export async function GET(req: NextRequest, res : NextResponse) {
 
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest, res : NextResponse) {
     const updatedInvoice = data.data
     const session = await getSession()
 
-    const invoiceId = data.invoice.id
+    const invoiceId = data.id
 
     const user = await prisma.user.findUnique({
         where:{

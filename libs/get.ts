@@ -43,6 +43,28 @@ export type cityAPIResponse = {
     value: string;
 }
 
+export type items = {
+    name: string;
+    quantity: number;
+    price: number;
+  }
+  
+  export type FormData  = {
+    street: string;
+    city: string;
+    state: string;
+    postCode: string;
+    toStreet: string;
+    toCity: string;
+    toState: string;
+    toPostCode: string;
+    description: string;
+    issueDate: Date;
+    toName: string;
+    toEmail: string;
+    items: items[];
+  };
+
 
 
 

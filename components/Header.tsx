@@ -5,13 +5,12 @@ import React, { FC, useState } from 'react'
 import plusIcon from '@/public/assets/icon-plus.svg'
 import Image from 'next/image'
 import {Button, useDisclosure} from "@nextui-org/react";
-import { oneState } from '@/libs/get'
 
 interface HeaderProps {
   invoices: Invoice[] | undefined
-  states: oneState[]
 }
-const Header : FC<HeaderProps> = ({invoices, states}) => {
+
+const Header : FC<HeaderProps> = ({invoices}) => {
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
 
 
@@ -32,7 +31,7 @@ const Header : FC<HeaderProps> = ({invoices, states}) => {
         </div>
     </div>
 
-    {isOpen && <CreateInvoice states={states} onClose={onClose} isOpen={isOpen} onOpenChange={onOpenChange}/>}
+    {isOpen && <CreateInvoice onClose={onClose} isOpen={isOpen} onOpenChange={onOpenChange}/>}
  
     </>
  

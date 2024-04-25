@@ -16,10 +16,6 @@ export default async function Home() {
 
   const invoices = await getInvoice(session)
 
-
-  const data = await fetch(`${process.env.NEXTAUTH_URL}/api/states`)
-  const states = await data.json()
-
   // const response = await fetch(`${process.env.NEXTAUTH_URL}/api/invoices`,
   // { cache: "no-cache", method: "GET", headers: headers() }
   // )
@@ -28,7 +24,7 @@ export default async function Home() {
 
   return (
     <main className="mt-20 mx-10 lg:mx-20">
-        <Header invoices={invoices} states={states}/>
+        <Header invoices={invoices}/>
         <Suspense fallback={<Loading/>}>
           <Invoices invoices={invoices}/>
         </Suspense>
