@@ -2,10 +2,10 @@ import React, { FC, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import "react-datepicker/dist/react-datepicker-cssmodules.css";
 import "react-datepicker/dist/react-datepicker.css";
-import { oneState, cityAPIResponse } from "@/libs/get";
+import { oneState, cityAPIResponse } from "@/libs/types";
 import { FieldValues, useFieldArray, useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { FormData } from "@/libs/get";
+import { FormData } from "@/libs/types";
 import DynamicModal from "./DynamicModal";
 import { useGetStates } from "@/hooks/useGetStates";
 

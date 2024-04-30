@@ -16,13 +16,13 @@ import Button from "@/components/Button";
 import deleteIcon from "@/public/assets/icon-delete.svg";
 import { FieldValues, useFieldArray, useForm } from "react-hook-form";
 import Image from "next/image";
-import { cityAPIResponse, oneState } from "@/libs/get";
-import { items } from "@/libs/get";
+import { cityAPIResponse, oneState } from "@/libs/types";
+import { items } from "@/libs/types";
 import toast from "react-hot-toast";
 import router from "next/navigation";
 import { useRouter } from "next/navigation";
 import DynamicModal from "@/components/Forms/DynamicModal";
-import { FormData } from "@/libs/get";
+import { FormData } from "@/libs/types";
 import { useGetStates } from "@/hooks/useGetStates";
 
 interface EditModalProps {

@@ -1,4 +1,4 @@
-import { cityAPIResponse, oneState } from '@/libs/get';
+import { cityAPIResponse, oneState } from '@/libs/types';
 import { useRouter } from 'next/navigation';
 import React, { useState, useEffect } from 'react'
 import {
@@ -9,7 +9,7 @@ import {
     useDisclosure,
   } from "@nextui-org/react";
 import { FieldArrayWithId, FieldErrors, FieldValues, UseFieldArrayAppend, UseFieldArrayRemove, UseFormHandleSubmit, UseFormRegister, UseFormReturn, UseFormSetValue } from 'react-hook-form';
-import { FormData } from '@/libs/get';
+import { FormData } from '@/libs/types';
 import Image from 'next/image'
 import deleteIcon from "@/public/assets/icon-delete.svg";
 
