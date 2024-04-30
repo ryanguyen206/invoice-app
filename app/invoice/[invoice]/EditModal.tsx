@@ -24,23 +24,26 @@ import { useRouter } from "next/navigation";
 import DynamicModal from "@/components/Forms/DynamicModal";
 import { FormData } from "@/libs/types";
 import { useGetStates } from "@/hooks/useGetStates";
+import { useGetCities } from "@/hooks/useGetCities";
 
 interface EditModalProps {
   id: string
+  invoice: Invoice
 }
 
 
 
-const EditModal = ({ id }: EditModalProps) => {
+const EditModal = ({ id, invoice }: EditModalProps) => {
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
-  const [cities, setCities] = useState<cityAPIResponse[] >([]);
-  const [toCities, setToCities] = useState<cityAPIResponse[]>([]);
+
+
+  const {cities, toCities, refetchCities} = useGetCities(invoice.state, invoice.toState)
 
   const router = useRouter()
   const form = useForm<FormData>()
   
-    
+  console.log(invoice)
 
   const {
     register,
@@ -70,17 +73,6 @@ const EditModal = ({ id }: EditModalProps) => {
       );
       const updatedInvoiceData = await updatedInvoiceResponse.json();
       const updatedInvoice = updatedInvoiceData.invoice;
-
-      
-
-      const data = await fetch(`/api/cities?stateCode=${updatedInvoice.state}`);
-      const response = await data.json();
-
-      const toCitydata = await fetch(`/api/cities?stateCode=${updatedInvoice.toState}`);
-      const toCityResponse = await toCitydata.json();
-      setCities(response)
-      setToCities(toCityResponse)
-      
     form.reset(updatedInvoice)
     };
     getInvoice();
@@ -141,12 +133,11 @@ const EditModal = ({ id }: EditModalProps) => {
       setValue={setValue}
       isOpen={isOpen}
       onOpenChange={onOpenChange}
-      type='edit'
       states={states}
       cities={cities}
       toCities={toCities}
-      setCities={setCities}
-      setToCities={setToCities}
+      refetchCities={refetchCities}
+
    
     />
     

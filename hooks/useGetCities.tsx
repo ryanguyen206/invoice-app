@@ -1,21 +1,36 @@
-import { cityAPIResponse, oneState } from '@/libs/get';
-import React, {useEffect, useState} from 'react'
-
-export const useGetCities = (stateCode?: string) => {
-    const [cities, setCities] = useState<cityAPIResponse[] | undefined>(undefined);
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { getCities } from '@/libs/get';
 
 
-    const fetchCities = async () => {
-        try {
-          const citiesResponse = await fetch(`/api/cities?stateCode=${stateCode}`);
-          const citiesData = await citiesResponse.json();
-          setCities(citiesData);
-        } catch (error) {
-          console.error("Error fetching states and cities:", error);
+
+export const useGetCities = (stateCode: string = 'US-AL', toStateCode: string = 'US-AL') => {
+  
+  const queryClient = useQueryClient();
+
+  const { data: cities } = useQuery({
+    queryKey:['cities', 'from'],
+    queryFn: () => getCities(stateCode)
+  })
+
+  const { data: toCities } = useQuery({
+    queryKey:['cities', 'to'],
+    queryFn: () => getCities(toStateCode)
+  })
+
+  const refetchCities = async (stateCode: string, where: 'from' | 'to') => {
+    try {
+      await queryClient.prefetchQuery({
+        queryKey: ['cities', where],
+        queryFn: async () => {
+          const cities = await getCities(stateCode);
+          console.log(cities);
+          return cities; 
         }
-      };
-      fetchCities();
-  
-  
-    return { fetchCities, cities };
+      });
+    } catch (error) {
+      console.error("Error prefetching cities:", error);
+    }
   };
+
+  return { cities, toCities, refetchCities };
+};

@@ -12,6 +12,7 @@ import { FieldArrayWithId, FieldErrors, FieldValues, UseFieldArrayAppend, UseFie
 import { FormData } from '@/libs/types';
 import Image from 'next/image'
 import deleteIcon from "@/public/assets/icon-delete.svg";
+import { useGetCities } from '@/hooks/useGetCities';
 
 interface DyanamicModalProps {
     onSubmit: (data: FieldValues) => {}
@@ -21,53 +22,50 @@ interface DyanamicModalProps {
     errors: FieldErrors<FormData>
     isSubmitting: boolean
     states?:  oneState[] | undefined
-    setStates?: React.Dispatch<React.SetStateAction<oneState[]>>
     handleSubmit: UseFormHandleSubmit<FormData, undefined>
     fields: FieldArrayWithId<FormData, "items", "id">[]
     isOpen?: boolean
     onOpenChange?: () => void
     remove: UseFieldArrayRemove
     append:  UseFieldArrayAppend<FormData, "items">
-    cities : cityAPIResponse[] 
-    toCities : cityAPIResponse[] 
-    setCities : React.Dispatch<React.SetStateAction<cityAPIResponse[]>>
-    setToCities : React.Dispatch<React.SetStateAction<cityAPIResponse[]>>
-    type: 'new' | 'edit'
+    cities? : cityAPIResponse[] | undefined
+    toCities? : cityAPIResponse[]  | undefined
+    refetchCities?:  any
+    // setCities? : React.Dispatch<React.SetStateAction<cityAPIResponse[]>>
+    // setToCities? : React.Dispatch<React.SetStateAction<cityAPIResponse[]>>
+
  
   
 
 }
 
-const DynamicModal = ({states, setStates, setCities, setToCities, cities, toCities, type, onSubmit, modalHeader, setValue, register, errors, isSubmitting, handleSubmit, fields, isOpen, onOpenChange, remove, append } : DyanamicModalProps) => {
+const DynamicModal = ({refetchCities, cities, toCities, states, onSubmit, modalHeader, setValue, register, errors, isSubmitting, handleSubmit, fields, isOpen, onOpenChange, remove, append } : DyanamicModalProps) => {
     
 
     const [scrollBehavior, setScrollBehavior] = React.useState<"outside" | "normal" | "inside" | undefined>("inside");
-
+ 
 
     const handleStateChange = async (state: string, where: "to" | "from") => {
-        const data = await fetch(`/api/cities?stateCode=${state}`);
-        const response = await data.json();
-        if (where === "from") {
-          setValue("state", state);
-          setCities(response);
-          setValue("city", response[0].value)
-        } else {
-          setValue("toState", state);
-          setToCities(response);
-          setValue("toCity", response[0].value)
-        }
+      setValue(where === "from" ? "state" : "toState", state);
+      if (where === "from") {
+        await refetchCities(state, 'from');
+      } else {
+        await refetchCities(state, 'to');
       };
+    };
+
     
-      const handleCityChange = async (city: string, where: "to" | "from") => {
+    const handleCityChange = async (city: string, where: "to" | "from") => {
         if (where === "from") {
           setValue("city", city);
         } else {
           setValue("toCity", city);
         }
-      };
+    };
+
   return (
     <>
-    {cities.length > 0 && toCities.length > 0 && 
+    {cities && cities?.length > 0 && toCities && toCities?.length > 0 && 
     <Modal
       size="xl"
       isOpen={isOpen}
@@ -115,7 +113,7 @@ const DynamicModal = ({states, setStates, setCities, setToCities, cities, toCiti
                       }
                     >
                       {cities &&
-                        cities?.map((city) => (
+                        cities?.map((city : any) => (
                           <option key={city.key} value={city.value}>
                             {city.value}
                           </option>
@@ -240,7 +238,7 @@ const DynamicModal = ({states, setStates, setCities, setToCities, cities, toCiti
                       onChange={(e) => handleCityChange(e.target.value, "to")}
                     >
                       {toCities &&
-                        toCities?.map((city) => (
+                        toCities?.map((city : any) => (
                           <option key={city.key} value={city.value}>
                             {city.value}
                           </option>

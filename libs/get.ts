@@ -1,6 +1,7 @@
 import prisma from '@/libs/prismadb'
 import { Session } from 'next-auth'
 import axios from 'axios'
+import { cityAPIResponse } from './types'
 
 export const getInvoice = async (session: Session | null)  => {
     const user = await prisma.user.findFirst({
@@ -36,6 +37,13 @@ export const getStates = async () => {
       console.error("Error fetching states and cities:", error);
     }
 } 
+
+export const getCities = async (stateCode: string = 'US-AL') => {
+    const data = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/cities?stateCode=${stateCode}`)
+    const cities : cityAPIResponse[] = await data.json()
+    console.log(cities, stateCode)
+    return cities
+  }
 
 
 

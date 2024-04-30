@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { FormData } from "@/libs/types";
 import DynamicModal from "./DynamicModal";
 import { useGetStates } from "@/hooks/useGetStates";
+import { useGetCities } from "@/hooks/useGetCities";
 
 interface CreateInvoiceProps {
   isOpen: boolean;
@@ -17,22 +18,10 @@ interface CreateInvoiceProps {
 
 const CreateInvoice = ({isOpen, onOpenChange,onClose}: CreateInvoiceProps) => {
 
-  const [cities, setCities] = useState<cityAPIResponse[]>([]);
-  const [toCities, setToCities] = useState<cityAPIResponse[] >([])
+
 
   const {states} = useGetStates()
-
-  useEffect(() => {
-    const getCities = async () => {
-      const data = await fetch(`${process.env.NEXT_PUBLIC_NEXTAUTH_URL}/api/cities?stateCode=US-AL`)
-      const cities = await data.json()
-      setCities(cities)
-      setToCities(cities)
-    }
-    getCities()
-  }, [])
-
-
+  const {cities, toCities, refetchCities } = useGetCities();
 
   const router = useRouter();
   const form = useForm<FormData>({
@@ -108,11 +97,11 @@ const CreateInvoice = ({isOpen, onOpenChange,onClose}: CreateInvoiceProps) => {
         onOpenChange={onOpenChange}
         append={append}
         remove={remove}
-        type='new'
         toCities={toCities}
         cities={cities}
-        setCities={setCities}
-        setToCities={setToCities}
+        refetchCities={refetchCities}
+        // setCities={setCities}
+        // setToCities={setToCities}
 
       />        
     </>
