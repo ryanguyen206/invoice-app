@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from '@/libs/prismadb'
 import { getSession } from "@/libs/serverSession";
-import { items } from "@/libs/get";
+import { items } from "@/libs/types";
 
 export async function GET(req: NextRequest, res : NextResponse) {
 

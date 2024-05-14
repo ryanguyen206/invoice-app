@@ -8,7 +8,9 @@ import { useFormStatus } from "react-dom";
 import toast from "react-hot-toast";
 import Button from "../Button";
 import Input from "../Input";
+import google from "@/public/assets/google.svg"
 import { cn } from "@/libs/cn";
+import Image from "next/image";
 
 interface AuthFormProps {
   formType: string;
@@ -49,15 +51,15 @@ const AuthForm: FC<AuthFormProps> = ({ formType, onSuccess }) => {
   };
 
   return (
-    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full lg:w-[80%] xl:w-[70%] md:max-w-[900px] sm:max-w-[630px]  ">
+    <div className=" m-0 ml-0 mr-0 w-screen h-screen ">
       <div
         className={cn(
-          "flex flex-col mx-10 md:flex-row min-h-full flex-1 justify-center   shadow-2xl   bg-white rounded-3xl"
+          "flex flex-col  lg:flex-row  justify-center   shadow-2xl   bg-white h-full "
         )}
       >
-        <div className="w-full md:w-1/2  mx-auto py-20  order-last md:order-first ">
+        <div className="w-full flex flex-col justify-center items-center  mx-auto order-last lg:order-first h-2/3 md:h-full  ">
           <div className=" ">
-            <h2 className="mb-10 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">
+            <h2 className="-mt-20 mb-10 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">
               {formType === "register" ? "Register" : "Sign In"}
             </h2>
           </div>
@@ -88,16 +90,25 @@ const AuthForm: FC<AuthFormProps> = ({ formType, onSuccess }) => {
                 onClick={(e) => handleSubmit(e)}
               />
             )}
+              <p className="my-6 text-center mx-auto">OR</p>
+          <div className="w-full max-w-[350px] mx-auto  md:w-2/3 lg:w-3/4 text-center  bg-blue-500 text-white py-3 rounded-md flex items-center hover:cursor-pointer">
+            <Image src={google} alt="google icon" className="ml-4 h-7 w-7 bg-white" />
+            <p className="w-full"  onClick={() => signIn('google', {callbackUrl:'/'})}>Login with google</p>
+          </div>
           </form>
+          <div>
+        
+          </div>
+      
         </div>
 
         {/* register */}
-        <div className="order-1 pt-10 bg-gradient-to-r from-violet-400 w-full to-purple text-center text-white  md:w-1/2 rounded-3xl md:order-last md:rounded-l-[120px] flex flex-col justify-center items-center pb-10 gap-y-6 ">
-          <p className="text-3xl font-bold">
+        <div className="order-1 pt-10 md:pt-20 bg-gradient-to-r from-violet-400 w-full to-purple text-center text-white lg:order-last flex flex-col justify-center items-center pb-10 gap-y-6 lg:gap-y-10 h-1/3 lg:h-full ">
+          <p className="text-4xl lg:text-5xl font-bold">
             {formType === "login" ? "Not a member?" : "Welcome Back!"}
           </p>
 
-          <p className="lg:text-lg">
+          <p className="lg:text-xl">
             {formType === "login" ? (
               <>
                 Register with your personal credentials <br /> to get started
@@ -107,6 +118,8 @@ const AuthForm: FC<AuthFormProps> = ({ formType, onSuccess }) => {
               <>
                 Enter your personal details <br /> to use all of the site
                 features
+        
+
               </>
             )}
           </p>

@@ -3,6 +3,7 @@ import NextAuth, { AuthOptions, NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@next-auth/prisma-adapter"
 import { PrismaClient } from "@prisma/client"
+import GoogleProvider from 'next-auth/providers/google'
 
 import prisma from '@/libs/prismadb'
 
@@ -17,7 +18,6 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'password', type: 'password' }
       },
       async authorize(credentials) : Promise<any> {
-
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Please fill out all fields")
         }
@@ -40,11 +40,15 @@ export const authOptions: NextAuthOptions = {
         if (!isCorrectPassword) {
             throw new Error("Incorrect password")
         }
-
         return user;
       }
     }
-    )
+    ),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      allowDangerousEmailAccountLinking: true
+    })
   ],
   callbacks: {
     async redirect({ url, baseUrl }) {
@@ -54,9 +58,47 @@ export const authOptions: NextAuthOptions = {
       else if (new URL(url).origin === baseUrl) return url;
       // Redirect to the provided callback URL if it is a sign-out operation
       else if (url.includes('/sign-out')) return '/sign-in';
+
+      else if (url.includes('/sign-in') || url.includes('/register')) return '/';
       // Fallback to the base URL
       return baseUrl;
-    }
+    },
+    async signIn({account, profile, user}) {
+      // console.log(account?.provider, profile, user)
+  
+        const email = user.email;
+        const existingUser = await prisma.user.findFirst({
+                where: {email: email || ''}
+            })
+            if (!existingUser) {
+              try {
+                      const newUser = await prisma.user.create({
+                      data: {
+                          email: user.email || '',
+                          name:user.name     
+                      }
+                  })   
+
+              } catch (error) {
+                  throw new Error('Failed to create a new user');
+              }
+          } 
+    
+     
+      return true
+    },
+    async jwt({token, user})
+    {
+       
+        if(user)
+        {
+            return {
+                ...token,
+                id: user.id,
+            }
+        }
+        return token;
+    },
   },
   
   debug: process.env.NODE_ENV === 'development',

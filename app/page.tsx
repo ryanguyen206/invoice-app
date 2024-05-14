@@ -23,11 +23,14 @@ export default async function Home() {
   // const invoices : Invoice[] = await response.json()
 
   return (
-    <main className="mt-20 mx-10 lg:mx-20">
-        <Header invoices={invoices}/>
+    <main className="bg-bg_light h-full container max-w-6xl mx-auto" >
+      <div className="mt-20 mx-10 lg:mx-20">
+      <Header invoices={invoices}/>
         <Suspense fallback={<Loading/>}>
           <Invoices invoices={invoices}/>
         </Suspense>
+      </div>
+   
    
     </main>
   );

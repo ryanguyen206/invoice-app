@@ -34,7 +34,7 @@ export default async function RootLayout({
           <SessionProvider session={session}>
         
             <Navbar/>
-            <div className="container bg-bg_light h-full mx-auto max-w-6xl">
+            <div className="w-full">
               {children}
             </div>
     

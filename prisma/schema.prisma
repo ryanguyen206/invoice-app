@@ -24,9 +24,34 @@ model User {
   hashedPassword  String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
- 
+  accounts      Account[]
   invoices Invoice[]
+  @@map("users")
 }
+
+
+model Account {
+  id                 String    @id @default(cuid())
+  userId              String    @map("user_id")
+  type                 String?
+  provider           String
+  providerAccountId  String    @map("provider_account_id")
+  token_type         String?
+  refresh_token      String?   @db.Text
+  access_token       String?   @db.Text
+  expires_at         Int?
+  scope              String?
+  id_token           String? @db.Text
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+
+  // @@unique([provider, providerAccountId], name: "provider_providerAccountId"
 
 model Invoice {
  id   String @id @default(uuid())
