@@ -59,7 +59,7 @@ const AuthForm: FC<AuthFormProps> = ({ formType, onSuccess }) => {
       >
         <div className="w-full flex flex-col justify-center items-center  mx-auto order-last lg:order-first h-2/3 md:h-full  ">
           <div className=" ">
-            <h2 className="mt-16 mb-6 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">
+            <h2 className=" mb-6 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">
               {formType === "register" ? "Register" : "Sign In"}
             </h2>
           </div>
