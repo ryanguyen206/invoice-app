@@ -26,7 +26,7 @@ export default async function RootLayout({
 
 
     <html lang="en">
-  <body className={`${leage_spartan.className} min-h-screen bg-bg_light `}>
+  <body className={`${leage_spartan.className} bg-bg_light `}>
         <Providers>
         <Toaster position="top-center" />
         <div className="flex flex-col lg:flex-row">
@@ -34,7 +34,7 @@ export default async function RootLayout({
           <SessionProvider session={session}>
         
             <Navbar/>
-            <div className="w-full">
+            <div className="w-full h-full">
               {children}
             </div>
     

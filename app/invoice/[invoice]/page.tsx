@@ -10,9 +10,12 @@ export default function Page({ params }: { params: { invoice: string } }) {
     return (
 
         <Suspense fallback={<Loading />}>
+            <div className="bg-bg_light h-full container max-w-6xl mx-auto">
             <div className="mt-20 mx-10 lg:mx-20">
             <GoBack/>
             <SingleInvoice id={params.invoice} />
+            </div>
+       
             </div>
    
         </Suspense>
