@@ -9,6 +9,7 @@ export const registerUser = async (formData: FormData) => {
 
     const email = formData.get("email")
     const password = formData.get("password")
+    const name = formData.get("name")
     
     const hashedPassword = await bcrypt.hash(password as string, 12)
 
@@ -26,7 +27,8 @@ export const registerUser = async (formData: FormData) => {
     const user = await prisma.user.create({
             data: {
                 email: email as string,
-                hashedPassword
+                hashedPassword,
+                name:  name as string
             }
         })
  

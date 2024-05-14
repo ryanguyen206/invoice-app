@@ -21,6 +21,7 @@ const AuthForm: FC<AuthFormProps> = ({ formType, onSuccess }) => {
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [name, setName] = useState<string>("");
   const ref = useRef<HTMLFormElement>(null);
   const { pending } = useFormStatus();
 
@@ -68,6 +69,13 @@ const AuthForm: FC<AuthFormProps> = ({ formType, onSuccess }) => {
             action={async (formData) => formAction(formData)}
             className="space-y-6 w-1/2 md:w-3/4 mx-auto"
           >
+            {formType === "register" &&    
+            <Input
+              label="Name"
+              name="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            /> }
             <Input
               label="Email"
               name="email"
@@ -93,7 +101,7 @@ const AuthForm: FC<AuthFormProps> = ({ formType, onSuccess }) => {
               <p className="my-6 text-center mx-auto">OR</p>
           <div className="w-full max-w-[350px] mx-auto  md:w-2/3 lg:w-3/4 text-center  bg-blue-500 text-white py-3 rounded-md flex items-center hover:cursor-pointer">
             <Image src={google} alt="google icon" className="ml-4 h-7 w-7 bg-white" />
-            <p className="w-full"  onClick={() => signIn('google', {callbackUrl:'/'})}>Login with google</p>
+            <p className="w-full"  onClick={() => signIn('google', {callbackUrl:'/'})}>{formType === "register" ? 'Register' : 'Login'} with google</p>
           </div>
           </form>
           <div>

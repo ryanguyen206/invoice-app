@@ -5,11 +5,14 @@ import logo from "@/public/assets/logo.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {User} from "@nextui-org/react";
 
 
 const Navbar = () => {
   const { data: session } = useSession();
   const pathname = usePathname()
+
+  console.log(session)
 
   if (pathname === '/sign-in' || pathname === '/register') {
     return null
@@ -20,7 +23,7 @@ const Navbar = () => {
 
     <>
       {/* large */}
-      <div className="hidden bg-[#252945] w-[130px] min-h-screen  lg:flex flex-col ">
+      <div className="hidden bg-[#252945] w-[150px] min-h-screen  lg:flex flex-col ">
         <div className="flex-1">
           <div className="w-full h-[70px] bg-purple"></div>
           <div className="w-full  flex justify-center items-center relative">
@@ -34,10 +37,15 @@ const Navbar = () => {
               />
             </div>
           </div>
+      
           <div className="w-full h-[70px] bg-purple_light rounded-br-3xl"></div>
         </div>
 
         <div className="mx-auto text-center w-full">
+          <User 
+            className="text-white flex flex-col mx-auto text-center mb-4"  
+              name={session?.user?.name}
+            />
           <hr className="opacity-45" />
           {session ? (
             <button
@@ -76,7 +84,12 @@ const Navbar = () => {
        
 
         <div className="flex items-center mr-6 ">
+        <User 
+            className="text-white flex mx-auto text-center mr-6"  
+              name={session?.user?.name}
+            />
           <div className="border h-full mr-6 opacity-45"></div>
+          
           {session ? (
             <button
               className="text-white   "
