@@ -3,7 +3,7 @@ import React from 'react'
 
 const Loading = () => {
   return (
-    <div className=' '>
+    <div className='container max-w-6xl mx-auto '>
           <Card className="mt-20 space-y-5 p-4 mx-auto" radius="lg">
         <Skeleton className="rounded-lg">
         <div className="h-24 rounded-lg bg-default-300"></div>
