@@ -5,12 +5,16 @@ import React, { FC, useState } from 'react'
 import plusIcon from '@/public/assets/icon-plus.svg'
 import Image from 'next/image'
 import {Button, useDisclosure} from "@nextui-org/react";
+import Filter from './Filter'
 
 interface HeaderProps {
   invoices: Invoice[] | undefined
+    setSelected: React.Dispatch<React.SetStateAction<string>>
+    selected: string
+
 }
 
-const Header : FC<HeaderProps> = ({invoices}) => {
+const Header : FC<HeaderProps> = ({invoices, setSelected, selected}) => {
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
 
 
@@ -21,6 +25,10 @@ const Header : FC<HeaderProps> = ({invoices}) => {
           <h1 className="text-3xl font-bold tracking-tighter">Invoices</h1>
           {invoices?.length === 0 ? <p className='text-text-500'>No invoices</p> : <p className="text-text-500">There are {invoices?.length}  invoices</p>}
         </div>
+        <div className='hidden md:block'>
+          <Filter selected={selected} setSelected={setSelected}/>
+        </div>
+
         <div>
           <div  className='cursor-pointer bg-purple  text-white py-2 px-6 rounded-full flex gap-x-4  items-center'>
             <div className='bg-white border rounded-full p-3 hidden lg:block'>
@@ -30,7 +38,9 @@ const Header : FC<HeaderProps> = ({invoices}) => {
           </div>
         </div>
     </div>
-
+    <div className='md:hidden mt-6'>
+          <Filter selected={selected} setSelected={setSelected}/>
+    </div>
     {isOpen && <CreateInvoice onClose={onClose} isOpen={isOpen} onOpenChange={onOpenChange}/>}
  
     </>

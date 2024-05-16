@@ -9,6 +9,7 @@ const config: Config = {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}"
   ],
   theme: {
+    
     screens: {
       sm:'640px',
       md:'850px',
@@ -32,6 +33,9 @@ const config: Config = {
         "text-400":"#7E88C3",
         "text-500":"#888EB0"
       },
+      transitionProperty: {
+        'height': 'height',
+      }
     },
   },
   plugins: [nextui()],
