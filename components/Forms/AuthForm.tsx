@@ -52,15 +52,15 @@ const AuthForm: FC<AuthFormProps> = ({ formType, onSuccess }) => {
   };
 
   return (
-    <div className=" m-0 ml-0 mr-0 w-screen h-screen ">
+
       <div
         className={cn(
-          "flex flex-col  lg:flex-row  justify-center   shadow-2xl   bg-white h-full "
+          "flex flex-col min-h-screen  lg:flex-row  justify-center   shadow-2xl   bg-white "
         )}
       >
-        <div className="w-full flex flex-col justify-center items-center  mx-auto order-last lg:order-first h-2/3 md:h-full  ">
+        <div className="w-full pt-6  border-4 flex flex-col flex-grow md:justify-center md:items-center  mx-auto order-last lg:order-first ">
           <div className=" ">
-            <h2 className=" mb-6 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">
+            <h2 className=" my-6 text-center text-3xl font-bold leading-9 tracking-tight text-gray-900">
               {formType === "register" ? "Register" : "Sign In"}
             </h2>
           </div>
@@ -111,7 +111,7 @@ const AuthForm: FC<AuthFormProps> = ({ formType, onSuccess }) => {
         </div>
 
         {/* register */}
-        <div className="order-1 pt-10 md:pt-20 bg-gradient-to-r from-violet-400 w-full to-purple text-center text-white lg:order-last flex flex-col justify-center items-center pb-10 gap-y-6 lg:gap-y-10 h-1/3 lg:h-full ">
+        <div className="order-1 pt-10 md:pt-20 bg-gradient-to-r from-violet-400 w-full to-purple text-center text-white lg:order-last flex flex-col justify-center items-center pb-10 gap-y-6 lg:gap-y-10   ">
           <p className="text-4xl lg:text-5xl font-bold">
             {formType === "login" ? "Not a member?" : "Welcome Back!"}
           </p>
@@ -151,7 +151,7 @@ const AuthForm: FC<AuthFormProps> = ({ formType, onSuccess }) => {
           )}
         </div>
       </div>
-    </div>
+
   );
 };
 
